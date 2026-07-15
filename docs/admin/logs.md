@@ -1,6 +1,10 @@
 # Logs
 
-!!! note "Draft"
-    Placeholder for the published operator guide. Content will be promoted from runbooks and rewritten for installers/admins — not a copy of developer workingdocs.
+Route: `/logs`
 
-View and download logs.
+Operator capabilities vary by release:
+
+- CDR / download endpoints where enabled
+- Full multi-file tail/list may still be incomplete vs legacy SARK
+
+For live SIP debugging, use Asterisk CLI / PCAP on the node when SPA tools are insufficient.

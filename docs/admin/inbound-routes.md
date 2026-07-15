@@ -1,6 +1,10 @@
 # Inbound routes (DDI)
 
-!!! note "Draft"
-    Placeholder for the published operator guide. Content will be promoted from runbooks and rewritten for installers/admins — not a copy of developer workingdocs.
+Route: `/inbound-routes`
 
-Map inbound numbers to destinations.
+1. Map inbound number (DDI) → destination (extension, queue, IVR, …).
+2. Save → **Commit**.
+
+### Fleet DID ownership
+
+Fleet catalog + SBC projection own **which instance** a DID routes to. Instance inbound routes own **what happens** once the call lands. See Fleet **DIDs** panel and [Tenant move](../fleet/tenant-move.md).

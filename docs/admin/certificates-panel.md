@@ -1,6 +1,19 @@
 # Certificates panel
 
-!!! note "Draft"
-    Placeholder for the published operator guide. Content will be promoted from runbooks and rewritten for installers/admins — not a copy of developer workingdocs.
+Route: `/certificates`
 
-Manage certificates from the admin UI.
+## Top line
+
+**Currently in use:** Purchased · Let's Encrypt · Snakeoil
+
+## Let's Encrypt block
+
+- Status, **Cert covers**, Expiry
+- **Renew now** — same SAN set
+- **Sync with tenant list** — after tenant FQDN changes ([details](../tls/sync-tenants.md))
+
+## Purchased
+
+Install / Remove — [Purchased certificate](../tls/purchased-certificate.md)
+
+First-time LE: [First Let's Encrypt](../tls/first-letsencrypt.md)

@@ -1,6 +1,8 @@
 # Network and site name
 
-!!! note "Draft"
-    Placeholder for the published operator guide. Content will be promoted from runbooks and rewritten for installers/admins — not a copy of developer workingdocs.
+Route: `/ip-settings`
 
-Site name and network settings.
+- Edit bind / NAT / **site name** as exposed.
+- Hostname, local IP, public IP, MAC are typically **read-only**.
+
+Changing public IP or DNS without Cert Sync and catalog updates breaks fleet and LE.

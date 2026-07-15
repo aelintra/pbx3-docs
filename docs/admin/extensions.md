@@ -1,6 +1,11 @@
 # Extensions
 
-!!! note "Draft"
-    Placeholder for the published operator guide. Content will be promoted from runbooks and rewritten for installers/admins — not a copy of developer workingdocs.
+Routes: `/extensions`, `/extensions/new`, `/extensions/:id`
 
-Provision extensions and phones.
+1. List → open extension (or New).
+2. Set name, number, devices / credentials as needed.
+3. **Save** → top bar **Commit**.
+
+Until Commit, Asterisk may still serve the previous config.
+
+Phones usually register through the SBC to a **tenant FQDN**, not the raw instance IP — keep Host / SIP domain aligned with the tenant.
