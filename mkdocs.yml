@@ -1,0 +1,141 @@
+site_name: PBX3 Documentation
+site_description: Installer and administrator guides for PBX3
+site_author: CoCoKraft
+copyright: Copyright &copy; CoCoKraft
+site_url: https://aelintra.github.io/pbx3-docs/
+repo_url: https://github.com/aelintra/pbx3-docs
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - announce.dismiss
+    - content.code.annotate
+    - content.code.copy
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - What is PBX3?: getting-started/what-is-pbx3.md
+      - Solo trial: getting-started/solo-trial.md
+      - Sign in to the admin UI: getting-started/sign-in.md
+  - Installation:
+      - Requirements: installation/requirements.md
+      - Install pbx3 and pbx3api: installation/install-pbx3-pbx3api.md
+      - First-run installer: installation/first-run.md
+      - Upgrade a package: installation/upgrade.md
+      - Restore from backup: installation/restore-from-backup.md
+  - TLS and certificates:
+      - Overview: tls/overview.md
+      - First Let's Encrypt certificate: tls/first-letsencrypt.md
+      - Sync when tenants change: tls/sync-tenants.md
+      - Purchased (custom) certificate: tls/purchased-certificate.md
+  - Admin guide:
+      - Home dashboard: admin/home-dashboard.md
+      - Tenants: admin/tenants.md
+      - Extensions: admin/extensions.md
+      - Trunks and outbound routes: admin/trunks-routes.md
+      - Inbound routes (DDI): admin/inbound-routes.md
+      - Queues, IVRs, and agents: admin/queues-ivrs-agents.md
+      - Timers and class of service: admin/timers-cos.md
+      - Backup and restore: admin/backup-restore.md
+      - Firewall: admin/firewall.md
+      - Network and site name: admin/network-site-name.md
+      - Instance globals: admin/instance-globals.md
+      - Certificates panel: admin/certificates-panel.md
+      - Logs: admin/logs.md
+      - Help messages: admin/help-messages.md
+  - Fleet operations:
+      - Fleet overview: fleet/overview.md
+      - Onboard a second instance: fleet/onboard-instance.md
+      - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md
+      - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
+      - Backups in the org bucket: fleet/backups-org-bucket.md
+      - Tenant move: fleet/tenant-move.md
+  - Cloud / S3 reference:
+      - Org bucket layout and CORS: cloud/bucket-layout-cors.md
+      - Node IAM (writer role): cloud/node-iam.md
+      - Control host (gatekeeper on EC2): cloud/control-host.md
+      - SPA catalog URL and Pages CORS: cloud/spa-catalog-cors.md
+  - Troubleshooting:
+      - Cannot log in: troubleshooting/cannot-log-in.md
+      - Certificate / HTTPS errors: troubleshooting/certificate-errors.md
+      - Commit stays dirty: troubleshooting/commit-stays-dirty.md
+      - Backup not visible in SPA: troubleshooting/backup-not-in-spa.md
+
+extra:
+  pname: PBX3
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search
