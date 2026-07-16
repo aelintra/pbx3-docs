@@ -111,7 +111,7 @@ Each area has a **single responsibility** and a **blast radius** (what breaks if
 
 ### 3.1 Tenant — the customer
 
-A **tenant** is (usually) one customer's phone world: their extensions, ring groups, IVR menus, voicemail, business hours, and their **outbound dialling policy** (what numbers they're allowed to call). Crucially, a tenant's identity is **decoupled from any physical server** — extension `2001` is `2001` no matter which node hosts it.  A customer who perhaps has more than one geographic location or business unit may have more than one tenant associated with it. 
+A **tenant** is (usually) one customer's phone world: their extensions, ring groups, IVR menus, voicemail, business hours, and their **outbound dialling policy** (what numbers they're allowed to call). Crucially, a tenant's identity is **decoupled from any physical server** — extension `2001` is `2001` no matter which node hosts it.  A customer who perhaps has more than one geographic location or business unit may have multiple tenants across the fleet. 
 
 Everything a tenant owns travels with it in a move. A tenant is *portable by design*.
 
