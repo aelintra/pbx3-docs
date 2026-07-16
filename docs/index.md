@@ -49,6 +49,7 @@ flowchart TB
     class SBC edge;
 ```
 
-**Calls** go Phones → **SBC** → **instances**. **S3** and the **Gatekeeper** are control-plane memory and orchestration — calls keep working if they are down.
+**Calls** go Phones → **SBC** → **instances**.   
+**S3** and the **Gatekeeper** are control-plane memory and orchestration — calls keep working if they are down.
 
 Start with [What is PBX3?](getting-started/what-is-pbx3.md), then [Sign in](getting-started/sign-in.md) or [Install](installation/requirements.md).
