@@ -111,15 +111,15 @@ Each area has a **single responsibility** and a **blast radius** (what breaks if
 
 ### 3.1 Tenant — the customer
 
-A **tenant** is one customer's phone world: their extensions, ring groups, IVR menus, voicemail, business hours, and their **outbound dialling policy** (what numbers they're allowed to call). Crucially, a tenant's identity is **decoupled from any physical server** — extension `2001` is `2001` no matter which node hosts it.
+A **tenant** is (usually) one customer's phone world: their extensions, ring groups, IVR menus, voicemail, business hours, and their **outbound dialling policy** (what numbers they're allowed to call). Crucially, a tenant's identity is **decoupled from any physical server** — extension `2001` is `2001` no matter which node hosts it.  A customer who perhaps has more than one geographic location or business unit may have more than one tenant associated with it. 
 
-Everything a tenant owns travels with them in a move. A tenant is *portable by design*.
+Everything a tenant owns travels with it in a move. A tenant is *portable by design*.
 
 ### 3.2 Instance (Node) — the engine
 
-An **instance** (or **node**) is a single PBX server — Asterisk plus its own database, firewall, and TLS certificates. Think of it like **one EC2 instance in an AWS account**: sovereign, self-contained, and responsible for its own security. It can host several tenants.
+An **instance** (or **node**) is a single PBX server — Asterisk plus its own database, firewall, and TLS certificates. Think of it like **one EC2 instance in an AWS account**: sovereign, self-contained, and responsible for its own security. It can host one or more tenants.
 
-Nodes are **identical and interchangeable** — that's what makes moving tenants between them possible. A node keeps making calls whether or not the directory, control plane, or S3 are reachable.
+Nodes are **logically identical and interchangeable** — that's what makes moving tenants between them possible. A node keeps making calls whether or not the directory, control plane, or S3 are reachable.  Nodes may vary in size (CPU's, memory, disk) according to their anticipated workload.  
 
 ### 3.3 SBC — the front door
 
