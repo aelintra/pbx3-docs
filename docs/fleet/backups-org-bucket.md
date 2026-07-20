@@ -1,5 +1,7 @@
 # Backups in the org bucket
 
+**Instance (PBX) backups** — nodes upload under `instances/{ksuid}/…`. For the **SBC edge**, see [SBC backup and restore](sbc-backup-restore.md).
+
 ## Layout
 
 ```text
@@ -19,7 +21,7 @@ Lab org: `08jzwn-pbx3`.
 ## Retention
 
 - Local: ~9 newest zips
-- S3: lifecycle on tagged `class=backup` (often 30d) — apply from **Mac ops**, not the node role:
+- S3: lifecycle on tagged `class=backup` (often 30d) under **`instances/`** and **`sbc/`** — apply from **Mac ops**, not the node role:
 
 ```bash
 ./pbx3-directory/tools/apply-backup-lifecycle-rule.sh 08jzwn-pbx3 30

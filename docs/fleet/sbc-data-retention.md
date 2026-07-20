@@ -46,5 +46,5 @@ php artisan pbx3sbc:purge-acc --dry-run
 
 ## Related
 
-- Backup/restore of the SBC database is a **separate** production-gate project (not this page).
+- [SBC backup and restore](sbc-backup-restore.md) — MariaDB dump → S3 → cold restore (production gate).
 - Product call history remains on the **instance** (Asterisk CDR), not SBC `acc`.
