@@ -84,6 +84,7 @@ nav:
       - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md
       - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
       - Backups in the org bucket: fleet/backups-org-bucket.md
+      - SBC data retention: fleet/sbc-data-retention.md
       - Tenant move: fleet/tenant-move.md
   - Cloud / S3 reference:
       - Org bucket layout and CORS: cloud/bucket-layout-cors.md
