@@ -2,7 +2,7 @@
 
 Cold DR for the **SBC edge** (OpenSIPS + Filament admin). Catalog re-project recovers fleet-owned routing only — **not** carrier peers, Fail2ban lists, or admin users. Those live in the edge MariaDB dump.
 
-This is **not** [instance backups](backups-org-bucket.md) and **not** [SBC MySQL aging](sbc-data-retention.md).
+This is **not** [instance backups](backups-org-bucket.md) and **not** [SBC MySQL aging](sbc-data-retention.md). For **HA promote**, do not treat a full restore as failover — use [warm sync + EIP promote](sbc-ha-promote.md) (`--db-only` onto standby, then fence + move EIP).
 
 !!! note "Architecture"
     Lab SBC and OpenSIPS apt packages are **amd64 (x86_64)**. Do not use an arm64 guest for a full install from `apt.opensips.org` on Ubuntu 24.04 today.

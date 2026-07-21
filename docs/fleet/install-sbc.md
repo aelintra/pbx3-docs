@@ -103,14 +103,17 @@ Details: `pbx3sbc/workingdocs/LE_HTTPS_SBC_ADMIN.md`. SIP TLS out of scope.
 
 ## Active–passive HA pair (lab shape)
 
-| Member | Owns EIP? | `advertised-ip` | `--server-name` |
-|--------|-----------|-----------------|-----------------|
-| Active | Yes | **EIP** | Shared FQDN |
-| Standby | No | **Same EIP** | Same FQDN |
+| Member | Owns EIP? | `advertised-ip` | `--server-name` | `--letsencrypt` |
+|--------|-----------|-----------------|-----------------|-----------------|
+| Active | Yes | **EIP** | Shared FQDN | **Yes** |
+| Standby | No | **Same EIP** | Same FQDN | **No** (issue LE only after it owns the EIP) |
 
-Promote = fence old active → reassociate EIP. Issue LE on whoever currently owns the EIP.
+Promote = fence old active → reassociate EIP → **Let’s Encrypt on the new active** → confirm `https://<FQDN>/admin/login`. SIP alone is not enough.
+
+Full gated checklist: **[SBC HA warm sync and EIP promote](sbc-ha-promote.md)**.
 
 ## Related
 
+- [SBC HA warm sync and EIP promote](sbc-ha-promote.md)
 - [SBC backup and restore](sbc-backup-restore.md)
 - [Fleet overview](overview.md)
