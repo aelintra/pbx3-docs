@@ -95,12 +95,25 @@ If you omit `--admin-*`, the installer creates a user with a generated password 
 !!! note "Shared DB with OpenSIPS"
     Edge `init-database.sh` pre-creates Laravel `sessions` / `cache` tables. Admin migrations are idempotent (`Schema::hasTable`) so a greenfield `php artisan migrate` does not fail with “Table 'sessions' already exists”. Older admin checkouts without that fix: pull latest `pbx3sbc-admin` or re-run migrate after updating those migration files.
 
+!!! note "APP_URL"
+    Current `pbx3sbc-admin` `install.sh` sets `APP_URL=http://<PUBLIC_FQDN>` from `--server-name`. If you still see `APP_URL=http://localhost`, Livewire on the dashboard can throw `RootTagMissingFromViewException` — fix with `sed` / edit `.env`, then `php artisan config:clear`.
+
+### Fail2ban sudoers (admin widgets)
+
+```bash
+cd ~/pbx3sbc
+sudo ./scripts/setup-admin-panel-sudoers.sh
+```
+
+Without this, Fail2ban can be running while the dashboard widget reports “Service Not Running” (`www-data` cannot run `fail2ban-client`).
+
 Check:
 
 ```bash
 systemctl is-active nginx
 curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1/admin/login
 # → 200 (or 302 to login)
+grep '^APP_URL=' ~/pbx3sbc-admin/.env
 ```
 
 From your laptop (SG must allow your IP on **80**):
