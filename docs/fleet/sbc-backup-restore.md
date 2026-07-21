@@ -56,6 +56,8 @@ Optional: `--stamp YYYYMMDDThhmmssZ` for a known archive.
 End-to-end: new **amd64** Ubuntu 24.04 → install both products → restore from S3 → Filament smoke.  
 Do **not** point production VIP / DNS at the scratch host.
 
+For **greenfield only** (no restore), see [Install SBC edge](install-sbc.md).
+
 ### 0. Prerequisites
 
 - Host: **x86_64** Ubuntu 24.04 (LAN VM, spare AMD box, or `t3.*` EC2 — **not** `t4g` unless you build OpenSIPS yourself)

@@ -84,6 +84,7 @@ nav:
       - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md
       - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
       - Backups in the org bucket: fleet/backups-org-bucket.md
+      - Install SBC edge (pbx3sbc + admin): fleet/install-sbc.md
       - SBC backup and restore: fleet/sbc-backup-restore.md
       - SBC data retention: fleet/sbc-data-retention.md
       - Tenant move: fleet/tenant-move.md
