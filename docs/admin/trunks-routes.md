@@ -15,4 +15,4 @@ Route: `/routes`
 
 Test with a known extension after Commit, not only from the SPA.
 
-Fleet PSTN number formats (national vs +E.164 per carrier): see [Number dialects](../fleet/number-dialect.md).
+Fleet PSTN number formats (national vs +E.164 per carrier; node DNID transform vs CLID as-is; `+CC` by serving country): see [Number dialects](../fleet/number-dialect.md).
