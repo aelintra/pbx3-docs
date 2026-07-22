@@ -117,6 +117,18 @@ Record start time. Target ≤ 20 minutes to Phase C **Done when**.
 !!! danger "Expected"
     After step 2, `https://<FQDN>/…` may fail until Phase D. That is normal. Do not roll the EIP back for that reason.
 
+### C0 — Standby SIP alive? (before moving EIP)
+
+Probe the **standby’s own public IP** (not the VIP/EIP). Fleet **Promote now** does this automatically and **warns** if OPTIONS fails — you can still confirm and proceed. Console/CLI break-glass has no gate.
+
+```bash
+# Resolve standby public IP (describe-instances), then:
+# SIP OPTIONS to <STANDBY_PUBLIC_IP>:5060 → expect SIP/2.0 200 (or 401/407)
+# Or on standby: systemctl is-active opensips → active
+```
+
+- [ ] Standby OpenSIPS answering **or** warning acknowledged (fail-back after fence: warm-sync / `systemctl start` first)
+
 ### C1 — Fence old active (if reachable)
 
 ```bash
