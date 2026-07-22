@@ -60,6 +60,25 @@ Greenfield install: [Install SBC edge](install-sbc.md).
 - [ ] Active: `https://<FQDN>/admin/login` → login page
 - [ ] Standby: `http://<standby-public-ip>/admin/login` → login page
 - [ ] Pair card filled
+- [ ] **Warm-sync ready (standby)** — Fleet Sync now will fail without these:
+  - [ ] Same `PBX3_FLEET_SERVICE_TOKEN` as active / control in standby `pbx3sbc-admin/.env`
+  - [ ] `/etc/pbx3sbc/log-ship.env` (`PBX3_ORG_BUCKET`, `PBX3_SBC_ID`) — copy from active
+  - [ ] AWS CLI v2 on standby
+  - [ ] IAM instance profile with `sbc/{id}/*` (lab: **`pbx3-sbc`**) attached to standby
+  - [ ] `sudo ./scripts/setup-admin-panel-sudoers.sh` (includes `sbc-backup-panel.sh`)
+  - [ ] SG: control → standby **TCP/80** for `/api/fleet/*`
+  - [ ] `sudo ./scripts/check-ha-standby-ready.sh --role standby` → **READY**
+
+**Ops helper (laptop):** after both boxes are installed, copy token + log-ship + CLI/sudoers (and optionally attach IAM):
+
+```bash
+export PBX3_SBC_SSH_KEY=~/Documents/pemfiles/opensips.pem
+./pbx3sbc/scripts/bootstrap-ha-standby-warm.sh \
+  --active ubuntu@<active-eip-or-ip> \
+  --standby ubuntu@<standby-public-ip> \
+  --standby-instance-id i-… \
+  --profile-name pbx3-sbc
+```
 
 ---
 

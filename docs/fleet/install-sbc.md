@@ -110,6 +110,8 @@ Details: `pbx3sbc/workingdocs/LE_HTTPS_SBC_ADMIN.md`. SIP TLS out of scope.
 
 Promote = fence old active → reassociate EIP → **Let’s Encrypt on the new active** → confirm `https://<FQDN>/admin/login`. SIP alone is not enough.
 
+After standby greenfield, run **warm-sync bootstrap** so Fleet **Sync now** works (fleet token, `log-ship.env`, AWS CLI, IAM `pbx3-sbc`, sudoers). Checklist: [SBC HA promote](sbc-ha-promote.md) Phase A; helper `pbx3sbc/scripts/bootstrap-ha-standby-warm.sh` + `check-ha-standby-ready.sh`.
+
 Full gated checklist: **[SBC HA warm sync and EIP promote](sbc-ha-promote.md)**.
 
 ## Related
