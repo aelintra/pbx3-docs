@@ -180,7 +180,7 @@ systemctl is-active opensips
 
 ## Phase D — Promote admin HTTPS (mandatory)
 
-Do **not** stop after Phase C.
+Fleet **Promote now** runs this automatically when control has `GATEKEEPER_EDGE_LE_EMAIL` set (SSH → `le-admin-cert.sh setup` on the new VIP holder). Manual break-glass:
 
 ```bash
 # SSH to NEW active (EIP)
@@ -193,7 +193,7 @@ cd /home/ubuntu/pbx3sbc-admin && sudo -u www-data php artisan config:clear
 
 **Done when**
 
-- [ ] `le-admin-cert.sh status <FQDN>` → `"configured":true`
+- [ ] `le-admin-cert.sh status <FQDN>` → `"configured":true` (or Promote result shows Phase D LE OK)
 - [ ] `https://<FQDN>/admin/login` → **200** (login page)
 - [ ] `APP_URL=https://<FQDN>`
 
