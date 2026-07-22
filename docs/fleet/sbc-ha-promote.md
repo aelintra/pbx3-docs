@@ -65,7 +65,11 @@ Greenfield install: [Install SBC edge](install-sbc.md).
 
 ## Phase B — Warm sync (keep standby ready)
 
-**When:** after any edge-authored change on the active, or **daily**.
+**Preferred:** Fleet → **Edge HA → Sync now** (control: active `POST /api/fleet/backup` → S3 → standby `POST /api/fleet/warm-pull` with `--db-only`). Daily backstop: `pbx3-edge-warm-sync.timer` on control (`05:30` UTC).
+
+**When:** after any edge-authored change on the active, or rely on the daily timer. Do **not** treat Sync now as failover — that is Phase C.
+
+**Manual fallback** (scp):
 
 ```bash
 # On ACTIVE
@@ -80,6 +84,7 @@ sudo /home/ubuntu/pbx3sbc/scripts/restore-sbc-backup.sh --db-only --yes --restar
 
 **Done when**
 
+- [ ] Fleet card shows last warm sync stamp (or manual checklist below)
 - [ ] Standby OpenSIPS `active`
 - [ ] Standby `advertised_address` still = EIP
 - [ ] Standby `APP_URL` unchanged by restore

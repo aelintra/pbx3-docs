@@ -27,7 +27,22 @@ s3://{org}/sbc/{PBX3_SBC_ID}/backups/{UTC_stamp}/
 
 Lab: `s3://08jzwn-pbx3/sbc/sbc/backups/`. Objects tagged `class=backup`.
 
-## Create and upload (on a live SBC)
+## Filament (VIP / in-service member)
+
+On `https://sbc.pbx3.com/admin` → **System → Backup**:
+
+- **Backup now** (optional Upload to S3) — disabled on standby (host does not hold `advertised_address` / EIP).
+- Lists local `sbcbak.*.zip` (Created UTC, Archive ID, size).
+- Restore is **not** in the panel — use CLI below on a cold/scratch host.
+- After deploying scripts: `sudo ./scripts/setup-admin-panel-sudoers.sh` (adds `sbc-backup-panel.sh`).
+
+Confirm Magrathea cron + S3: `ls /etc/cron.d/pbx3sbc-backup` and `aws s3 ls s3://08jzwn-pbx3/sbc/sbc/backups/`.
+
+## Warm sync (Fleet — not cold restore)
+
+Fleet → **Edge HA → Sync now**: active uploads a stamp; standby pulls and `restore --db-only`. Daily backstop on control: `pbx3-edge-warm-sync.timer`. See [SBC HA promote](sbc-ha-promote.md) Phase B.
+
+## Create and upload (CLI on a live SBC)
 
 Needs `/etc/pbx3sbc/log-ship.env` (`PBX3_ORG_BUCKET`, `PBX3_SBC_ID`) and IAM for `sbc/{id}/*`.
 
