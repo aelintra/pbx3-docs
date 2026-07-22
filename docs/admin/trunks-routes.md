@@ -14,3 +14,5 @@ Route: `/routes`
 2. Save → **Commit**.
 
 Test with a known extension after Commit, not only from the SPA.
+
+Fleet PSTN number formats (national vs +E.164 per carrier): see [Number dialects](../fleet/number-dialect.md).

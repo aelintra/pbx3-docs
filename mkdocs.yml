@@ -85,6 +85,7 @@ nav:
       - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
       - Backups in the org bucket: fleet/backups-org-bucket.md
       - Install SBC edge (pbx3sbc + admin): fleet/install-sbc.md
+      - Number dialects (PSTN formats): fleet/number-dialect.md
       - SBC HA warm sync and EIP promote: fleet/sbc-ha-promote.md
       - SBC backup and restore: fleet/sbc-backup-restore.md
       - SBC data retention: fleet/sbc-data-retention.md

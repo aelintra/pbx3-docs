@@ -8,3 +8,5 @@ Route: `/inbound-routes`
 ### Fleet DID ownership
 
 Fleet catalog + SBC projection own **which instance** a DID routes to. Instance inbound routes own **what happens** once the call lands. See Fleet **DIDs** panel and [Tenant move](../fleet/tenant-move.md).
+
+After SBC number-dialect normalize, inbound R-URIs are **+E.164** — prefer matching patterns accordingly ([Number dialects](../fleet/number-dialect.md)).
