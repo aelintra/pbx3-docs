@@ -25,7 +25,7 @@ ITU-T E.164 is the digit structure; for SIP routing across carriers and Teams-st
 
 | Serving country | National habit | Overseas IDD | Typical Egress `transform` |
 |-----------------|----------------|--------------|----------------------------|
-| UK | `0` + NSN | `00` + country + NSN (e.g. `0015139266349`) | `0:+44 00:+` (current fleet seed) |
+| UK | `0` + NSN | `00` + country + NSN (e.g. `0015139266349`) | `00:+ 0:+44` (fleet seed; longer prefix first) |
 | US / NANP | `1` + 10 digits (often leave as-is) | `011` + country + NSN (e.g. `011441924918076`) | e.g. `011:+` when US fleet seed exists — **do not** apply UK `0:+44` |
 
 Examples after node transform: `0015139266349` → `+15139266349`; `011441924918076` → `+441924918076`.
