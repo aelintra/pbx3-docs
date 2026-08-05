@@ -2,8 +2,10 @@
 
 Route: `/inbound-routes`
 
-1. Map inbound number (DDI) → destination (extension, queue, IVR, …).
+1. Map inbound number (DDI) → destination (extension, queue, IVR, …), or attach a **route profile** for schedule-aware routing.
 2. Save → **Commit**.
+
+For how day timers, modes, and route profiles fit together, see [Day timers and route profiles](day-timers-and-profiles.md).
 
 ### Fleet DID ownership
 

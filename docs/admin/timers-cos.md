@@ -1,6 +1,10 @@
 # Timers and class of service
 
-## Timers
+## Day timers (schedule / day-parts)
+
+For inbound open / closed / lunch-style routing, see **[Day timers and route profiles](day-timers-and-profiles.md)**. That is the operator help for calendar modes and profiles.
+
+## Other timers
 
 Edit system / feature timers as exposed → Save → **Commit**.
 

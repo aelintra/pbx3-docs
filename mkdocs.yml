@@ -69,6 +69,7 @@ nav:
       - Extensions: admin/extensions.md
       - Trunks and outbound routes: admin/trunks-routes.md
       - Inbound routes (DDI): admin/inbound-routes.md
+      - Day timers and route profiles: admin/day-timers-and-profiles.md
       - Queues, IVRs, and agents: admin/queues-ivrs-agents.md
       - Timers and class of service: admin/timers-cos.md
       - Backup and restore: admin/backup-restore.md
