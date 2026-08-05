@@ -77,10 +77,12 @@ Under default open:
 
 1. Day timer: every day `17:00`–`09:00` → mode `closed` (overnight).
 2. Day timers: Saturday and Sunday all day → mode `closed`.
-3. Day timers: Mon–Fri `12:00`–`13:00` → mode `lunch`.
+3. Day timer: **Mon–Fri** `12:00`–`13:00` → mode `lunch` (one row — day range).
 4. Route profile on the DID: `open` → main IVR, `closed` → night greeting, `lunch` → lunch queue.
 
 Weekday mid-morning: no timer matches → **open** → main IVR. Noon → **lunch**. Evening → **closed**.
+
+Day of week may be `*`, a single day, or a **forward** range (`mon-fri`, `mon-thu`, `tue-fri`, `sat-sun`). Wrap-around (`tue-mon`) is rejected.
 
 ## Related panels
 
