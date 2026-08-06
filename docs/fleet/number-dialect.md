@@ -2,7 +2,10 @@
 
 Operators map each carrier Peer to a **number dialect** so dialled numbers and CLI survive Magrathea ↔ Gamma (and similar) format quirks. Inventory stays E.164 **digits**; the fleet wire between node and SBC is **+E.164** (`+` + country code of the **node’s serving country**, not hard-coded `+44`).
 
+**Who does what (policy):** `pbx3/pbx3-directory/docs/NUMBER_WIRE_POLICY.md`  
 **Requirements:** `pbx3/pbx3-directory/docs/NUMBER_DIALECT_REQUIREMENTS.md` (same tree as other fleet specs).
+
+**Naming:** **The SBC** = our edge. **Magrathea** / **Gamma** = UK ITSP Peers (not the SBC).
 
 ## Why +E.164
 
@@ -10,10 +13,14 @@ ITU-T E.164 is the digit structure; for SIP routing across carriers and Teams-st
 
 ## Two layers (do not conflate)
 
-| Layer | Problem | Where |
-|-------|---------|--------|
+Full policy: **`NUMBER_WIRE_POLICY.md`**. Short form:
+
+| Layer | Problem | Where (Phase 1 now) |
+|-------|---------|---------------------|
 | **Subscriber dial habit** | National / IDD access codes from the phone (UK `0…` / `00…`, US `1…` / `011…`) | **Node** — Egress trunk transformation mask (DNID only) |
 | **Carrier wire format** | What Magrathea/Gamma/etc. accept on R-URI and PAID/CLI | **SBC** — Peer Number dialect (+ optional strip / pri_prefix) |
+
+Phase 2 may move habit normalize to the SBC when gated; carrier face stays on the SBC always.
 
 ### Node — DNID vs CLID
 
