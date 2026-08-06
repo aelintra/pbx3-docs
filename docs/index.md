@@ -53,3 +53,5 @@ flowchart TB
 **S3** and the **Gatekeeper** are control-plane memory and orchestration — calls keep working if they are down.
 
 Start with [What is PBX3?](getting-started/what-is-pbx3.md), then [Sign in](getting-started/sign-in.md) or [Install](installation/requirements.md).
+
+Integrators: [Instance API](api/index.md) (Sanctum JSON API on each node `:44300`).

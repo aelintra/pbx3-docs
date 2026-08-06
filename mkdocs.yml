@@ -79,6 +79,11 @@ nav:
       - Certificates panel: admin/certificates-panel.md
       - Logs: admin/logs.md
       - Help messages: admin/help-messages.md
+  - Instance API:
+      - Introduction: api/index.md
+      - Methods and notation: api/overview.md
+      - Authentication: api/auth.md
+      - Endpoint reference: api/reference.md
   - Fleet operations:
       - Fleet overview: fleet/overview.md
       - Onboard a second instance: fleet/onboard-instance.md
