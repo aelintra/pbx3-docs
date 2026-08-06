@@ -97,6 +97,7 @@ nav:
       - SBC backup and restore: fleet/sbc-backup-restore.md
       - SBC data retention: fleet/sbc-data-retention.md
       - Tenant move: fleet/tenant-move.md
+      - Tenant delete: fleet/tenant-delete.md
   - Cloud / S3 reference:
       - Org bucket layout and CORS: cloud/bucket-layout-cors.md
       - Node IAM (writer role): cloud/node-iam.md
