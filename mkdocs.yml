@@ -92,6 +92,7 @@ nav:
       - Backups in the org bucket: fleet/backups-org-bucket.md
       - Install SBC edge (pbx3sbc + admin): fleet/install-sbc.md
       - Number dialects (PSTN formats): fleet/number-dialect.md
+      - Site Groups (cross-tenant short dial): fleet/site-groups.md
       - Dial prefixes (InterSARK / INTERSITE convert): fleet/dial-prefix-legacy-migrate.md
       - SBC HA warm sync and EIP promote: fleet/sbc-ha-promote.md
       - SBC backup and restore: fleet/sbc-backup-restore.md

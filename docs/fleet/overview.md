@@ -24,3 +24,7 @@ See also the schematic on [What is PBX3?](../getting-started/what-is-pbx3.md).
 ## Lab map
 
 Phones → **sbc.pbx3.com** → **08jzwn** / **bzy54n**; bucket **`08jzwn-pbx3`**; Gatekeeper **control.pbx3.com**.
+
+## Cross-tenant short dial
+
+Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destination routing prefix + membership mesh. Hand-entered dial prefixes are lab / break-glass only.

@@ -485,7 +485,10 @@ DB snapshot set (zip).
 
 ## Dial aliases / dial prefixes (A)
 
-Cross-tenant short dial. **Instance admin only** (not `tenant` ability).
+Cross-tenant short dial rows on this instance. **Instance admin only** (not `tenant` ability).
+
+!!! note "Fleet product path"
+    Production sister-site short dial is configured in **Fleet → Site Groups**, not by inventing meshes here. See [Site Groups](../fleet/site-groups.md). When the dial-cohort feature is on, Sanctum forbids create/update/delete of cross-tenant prefixes; managed (`source=cohort`) rows are read-only.
 
 #### GET /dialaliases · GET /dialaliases/{dialalias}
 #### POST /dialaliases · PUT /dialaliases/{dialalias} · DELETE /dialaliases/{dialalias}
