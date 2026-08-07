@@ -23,7 +23,8 @@ This is **not** [SBC backup and restore](sbc-backup-restore.md) (cold DR) and **
 2. Install **admin** (`pbx3sbc-admin`) — PHP/nginx/Filament (**`--server-name` required**)  
 3. Smoke: services + admin login  
 4. HTTPS: installer `--letsencrypt` **or** Filament **Certificates** (SPA-like)  
-5. Optional: seed peers/domains, or [restore a backup](sbc-backup-restore.md)
+5. Optional: **TOTP 2FA** for Filament admins (authenticator app)  
+6. Optional: seed peers/domains, or [restore a backup](sbc-backup-restore.md)
 
 ---
 
@@ -98,6 +99,41 @@ sudo ~/pbx3sbc-admin/scripts/le-admin-cert.sh setup \
 ```
 
 Details: `pbx3sbc/workingdocs/LE_HTTPS_SBC_ADMIN.md`. SIP TLS out of scope.
+
+---
+
+## 4. Admin TOTP 2FA (optional, recommended)
+
+Filament admin supports **opt-in** authenticator-app MFA (TOTP). Any compliant app works (2FAS, Authy, Google Authenticator, …). **No SMS.** Fleet Bearer API (`/api/fleet/*`) is separate and does **not** use this MFA.
+
+### Enroll
+
+1. Sign in with email + password (installer does **not** prompt for 2FA at create-admin).
+2. Topbar **Profile** (next to Logout — the Filament avatar menu is hidden for SPA kinship).
+3. Enable **Two Factor Authentication** → scan the QR → confirm with a 6-digit code.
+4. **Save the recovery codes** shown once.
+5. Next login: password → challenge → authenticator code (or a recovery code).
+
+### Authenticator issuer label
+
+The QR **issuer** defaults to **`Aelintra SBC`**. Override **before enroll** (or disable + re-enroll after changing):
+
+```bash
+# in ~/pbx3sbc-admin/.env
+PBX3_TOTP_ISSUER="Aelintra SBC Magrathea"
+```
+
+Then `php artisan config:clear` (and reload PHP-FPM if needed).
+
+Use a **distinct** issuer on each edge host (e.g. Magrathea vs companion) so the same admin email does not look identical in the authenticator app. Crypto still works with a shared label; UX does not.
+
+There is **no** enroll-time UI to set the issuer — change `.env` first.
+
+### Lockout
+
+Prefer a recovery code. Sole admin locked out: clear 2FA for that user (tinker / `breezy_sessions`), then re-enroll. Detail: `pbx3sbc-admin/workingdocs/TOTP_2FA_SBC.md`.
+
+Instance SPA Sanctum MFA is a separate track (not this edge admin).
 
 ---
 
