@@ -13,8 +13,8 @@ sudo /opt/pbx3/scripts/restore-backup-zip.sh --full /opt/pbx3/bkup/pbx3bak.*.zip
 ## After restore (operator checklist)
 
 1. Confirm `globals` identity matches **this** node (same-KSUID rebuild: already correct; cross-node: patch carefully).
-2. Default tenant `fqdn` and DNS for tenant FQDNs point here.
-3. Certificates → **Sync with tenant list** (not Renew alone).
+2. **Fleet:** instance A record only. **Solo/direct:** default tenant `fqdn` and tenant FQDN DNS point here.
+3. Certificates → **Sync certificate** (not Renew alone) — fleet = instance FQDN only.
 4. Merge help seeds if UI hints are empty:
 
 ```bash

@@ -1,17 +1,31 @@
-# Sync when tenants change
+# Sync certificate (Let's Encrypt)
 
-Let's Encrypt **Renew** keeps the **old** SAN list. After you add/remove tenants, restore, or move tenants:
+!!! danger "DO NOT create DNS A records for tenant domains (SBC fleet)"
+    Tenant FQDNs are **not** published in DNS. Sync issues the **instance** hostname only. If you added tenant A records “to make LE work,” remove them — that path is wrong for fleet.
 
-1. Ensure each tenant FQDN has DNS **A → this node**.
-2. SPA → **Certificates** → **Sync with tenant list**.
+**Renew** keeps the **old** SAN list on disk. Use **Sync certificate** to re-issue with the **intended** list.
+
+## SBC fleet (default)
+
+Lock: node LE = **instance FQDN only** — no tenant public A records, no tenant SANs.
+
+1. Instance A record → this node.
+2. SPA → **Certificates** → **Sync certificate**.
+3. **Cert covers:** should list **only** the instance hostname.
+
+CLI: `sudo /opt/pbx3/scripts/le-sync-cert-sans.sh you@example.com instance.example.com`
+
+## Solo / direct-to-node
+
+Option A multi-SAN (node + tenants that resolve here):
+
+1. Each tenant FQDN has DNS **A → this node**.
+2. SPA → **Certificates** → **Sync certificate**.
 3. Confirm **Cert covers:** lists node + tenants.
 
-Use packages that include SAN replace (`le-sync-cert-sans.sh`, **≥ 0.0.3-17** in the lab line).
+## Tenant move
 
-## Tenant move (certs)
-
-1. Destination: Sync after import (add SAN).
-2. DNS cutover.
-3. Source: delete tenant → Sync (drop SAN).
+- **Fleet:** OpenSIPS setid + catalog — **not** tenant DNS/SAN.
+- **Solo/direct:** dest Sync after import; source Sync after wipe.
 
 **Do not** rely on Renew alone to grow or shrink SANs.

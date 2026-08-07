@@ -10,7 +10,7 @@ Route: `/certificates`
 
 - Status, **Cert covers**, Expiry
 - **Renew now** — same SAN set
-- **Sync with tenant list** — after tenant FQDN changes ([details](../tls/sync-tenants.md))
+- **Sync certificate** — re-issue intended SANs ([details](../tls/sync-tenants.md)); fleet = instance FQDN only
 
 ## Purchased
 

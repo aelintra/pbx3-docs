@@ -84,7 +84,7 @@ Filament **Certificates** mirrors the instance SPA:
 | **Let's Encrypt** | Hostname from `APP_URL` (readonly); email + **Get certificate**; when configured: status + **Renew now** |
 | **Purchased certificate** | Upload fullchain + key; Install / Remove |
 
-Edge vs SPA: **no** multi-tenant SAN “Sync with tenant list” (single admin FQDN).
+Edge vs SPA: **no** multi-tenant SAN sync on the SBC admin host (single admin FQDN). Instance nodes: fleet = instance-only LE.
 
 ---
 
