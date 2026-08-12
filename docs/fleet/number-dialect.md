@@ -42,15 +42,15 @@ Examples after node transform: `0015139266349` → `+15139266349`; `011441924918
 In **SBC Admin → Peering → Peers**:
 
 1. Open the Magrathea / Gamma inbound or outbound Peer (not Asterisk destinations).
-2. Set **Number dialect**:
-   - **UK — Magrathea** — accepts national / +E.164 / IDD / digits; outbound +E.164; PAID + RPID
-   - **UK — Gamma** — same inbound accept; outbound +E.164; PAID
+2. Set **Number dialect** (a **format recipe**, not a carrier brand — see requirements §5.3):
+   - **UK — Magrathea** — UK multi-accept; outbound +E.164; PAID + RPID (lab label for that CLI matrix)
+   - **UK — Gamma** — same inbound accept; outbound +E.164; PAID (From aligned)
    - **Strict +E.164** — Teams-style; inbound must already be `+…`
    - **None** — best-effort UK inbound; outbound leaves drouting strip/prefix alone
 3. Optional **Advanced → strip / pri_prefix** — stock OpenSIPS drouting digit massage on outbound R-URI only (count to strip, then digit string to prepend). Prefer a dialect when CLI/PAID rules matter.
 4. Save (triggers `dr_reload`).
 
-Stored as `dialect=uk-magrathea` (etc.) in Peer `attrs` alongside `carrier=` / `role=`.
+Stored as `dialect=uk-magrathea` (etc.) in Peer `attrs` alongside `carrier=` / `role=`. Do **not** expect a new dialect id for every ITSP or country — reuse a recipe and set country via serving-country / `default_cc` when that lands on the Peer.
 
 ## Call path (summary)
 
