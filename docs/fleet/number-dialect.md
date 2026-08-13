@@ -52,6 +52,8 @@ In **SBC Admin → Peering → Peers**:
 
 Stored as `dialect=uk-magrathea` (etc.) in Peer `attrs` alongside `carrier=` / `role=`. Do **not** expect a new dialect id for every ITSP or country — reuse a recipe and set country via serving-country / `default_cc` when that lands on the Peer.
 
+**Target (requirements §5.4):** ops must be able to **compose a new profile** from shipped parsers/renderers (and `default_cc`) without an OpenSIPS tip. Today only the built-in recipe enum is live; slot/profile editing is the next dialect slice.
+
 ## Call path (summary)
 
 | Leg | Behaviour |
