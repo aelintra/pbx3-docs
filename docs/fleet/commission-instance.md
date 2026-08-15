@@ -61,9 +61,14 @@ Ubuntu **24.04** LTS. Prefer ARM (`t4g.medium`) unless the fleet is already on x
 
 Outbound **443** required (apt, S3, LE).
 
-Allocate an **Elastic IP** and associate it. Record `INSTANCE_ID` and `PUBLIC_IP`.
+Allocate an **Elastic IP** and associate it. Save both values in the worksheet:
+
+- **`PUBLIC_IP`** — used now for SSH / DNS / Provision edge  
+- **`INSTANCE_ID`** (`i-…`) — needed later for [Step 6 onboard](#step-6--adopt-into-fleet-onboard) (`--instance-id`); not used for SSH
 
 ```bash
+export PUBLIC_IP=…          # EIP after associate
+export INSTANCE_ID=i-…      # EC2 instance id — keep for onboard
 export SSH_HOST=ubuntu@${PUBLIC_IP}
 ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" 'hostname; uname -m'
 ```
@@ -97,7 +102,15 @@ dpkg-query -W pbx3 pbx3cagi
 
 ## Step 3 — First-run installer (identity)
 
-Fleet naming lock: FQDN is **`{opaque-shortuid}.{apex}`**. Do **not** set vanity hostnames like `kildare.pbx3.com` unless you intentionally break-glass with `PBX3_ALLOW_VANITY_FQDN=1`.
+You do **not** type the FQDN. You supply the **apex**; the installer mints an opaque **shortuid** and writes `fqdn = {shortuid}.{apex}`.
+
+| You provide | Installer derives / writes |
+|-------------|----------------------------|
+| `DOMAIN_TLD` (apex), e.g. `pbx3.com` | `shortuid` (opaque 6-char) |
+| `INSTANCE_SITENAME` (friendly **Name**, e.g. Sirius) | `fqdn` = `{shortuid}.pbx3.com` |
+| Admin email + password (SPA login) | `globals.id` (**KSUID** — catalog / S3 key) |
+
+Example: apex `pbx3.com` → shortuid `7k2m9q` → FQDN **`7k2m9q.pbx3.com`**. That FQDN is what Step 5 DNS and LE use.
 
 ```bash
 sudo DOMAIN_TLD=pbx3.com \
@@ -109,14 +122,24 @@ sudo DOMAIN_TLD=pbx3.com \
 
 Omit `PBX3_ADMIN_*` to answer interactive prompts on a real TTY. There is **no** factory SPA password — remember what you set.
 
-Record identity:
+**Do not** pass `INSTANCE_FQDN=kildare.pbx3.com` (vanity host). That path is rejected unless you intentionally break-glass with `PBX3_ALLOW_VANITY_FQDN=1`.
+
+After install, **read** identity (this is where FQDN appears):
 
 ```bash
 sqlite3 /opt/pbx3/db/sqlite.db \
   "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
 ```
 
-Copy **KSUID** (`id`), **shortuid**, and **fqdn** into the worksheet. Catalog and S3 use the KSUID.
+Copy into the worksheet:
+
+```bash
+export KSUID=…              # id column
+export SHORTUID=…           # shortuid column
+export INSTANCE_FQDN=…      # fqdn column — use in Step 5 DNS/LE
+```
+
+Catalog and S3 paths use the **KSUID**, not the shortuid.
 
 !!! warning "Do not yet"
     Do **not** set `PBX3_ORG_BUCKET` by hand — onboard owns fleet `.env`.  
