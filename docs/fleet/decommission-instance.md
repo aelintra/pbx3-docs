@@ -1,6 +1,6 @@
 # Decommission a fleet instance
 
-Remove a **home box** (EC2 / node) from the fleet: tenants first, then catalog instance, Magrathea hygiene, then terminate AWS.
+Remove a **home box** (EC2 / node) from the fleet: tenants first, then catalog instance, SBC hygiene, then terminate AWS.
 
 This is **not** the same as [Tenant delete](tenant-delete.md). Tenants and instances are different Fleet objects.
 
@@ -26,7 +26,7 @@ Collect from Fleet → **Instances** (or catalog):
 | `sbc_dispatcher_setid` | `4` |
 | Tenants still on this home | list under Fleet → **Tenants** filtered by home |
 
-Also: Magrathea admin (`https://sbc.pbx3.com/admin`), AWS console/CLI, DNS for the instance FQDN.
+Also: SBC admin (`https://sbc.pbx3.com/admin` in lab), AWS console/CLI, DNS for the instance FQDN.
 
 ---
 
@@ -43,7 +43,7 @@ Do **not** terminate EC2 while active tenants still home here.
 ### DIDs (if deleting tenants)
 
 1. Fleet → **DIDs** → **Release** each number on that tenant.  
-   Release marks catalog `released` **and** updates Magrathea inbound routes in one step (no separate “re-project” click).
+   Release marks catalog `released` **and** updates SBC inbound routes in one step (no separate “re-project” click).
 2. Then run Fleet → **Tenants** → **Delete** (type shortuid at confirm).  
    Soft-released DID history rows may remain grey in the DID list; that is audit residue, not live ownership.
 
@@ -73,9 +73,11 @@ After **Decom**, the instance **must not** appear as Active. Tenants for that ho
 
 ---
 
-## Step 3 — Magrathea (SBC) hygiene
+## Step 3 — SBC hygiene
 
 Tenant Delete already removed the tenant **SIP domain**. Instance **Decom** does **not** tear down edge routing for the home.
+
+Open the SBC admin UI (lab: `https://sbc.pbx3.com/admin`).
 
 ### 3a — Peers
 
@@ -87,7 +89,7 @@ Tenant Delete already removed the tenant **SIP domain**. Instance **Decom** does
 
 ### 3c — Dispatcher destinations (setid)
 
-There is **no** top-level **Dispatcher** menu. Destinations live under **Domain Routes → Manage destinations**, and for **fleet-locked** setids Magrathea **refuses** create/edit/delete (catalog / Provision edge is the author — Rule 13).
+There is **no** top-level **Dispatcher** menu. Destinations live under **Domain Routes → Manage destinations**, and for **fleet-locked** setids the SBC admin **refuses** create/edit/delete (catalog / Provision edge is the author — Rule 13).
 
 | Situation | What to do |
 |-----------|------------|
@@ -112,7 +114,7 @@ Fleet nodes do **not** publish public tenant A records.
 3. Optional later: detach/delete the node-scoped IAM instance profile / role.
 
 !!! warning "Order matters for noise"
-    Prefer **Decom → Magrathea Peers/WL → terminate**.  
+    Prefer **Decom → SBC Peers/WL → terminate**.  
     Terminating while the catalog row is still **active** causes Gatekeeper `/up` probe failures and ops mail until Decom.
 
 ---
@@ -133,7 +135,7 @@ Then Fleet Create / move tenants back, re-allocate DIDs, smoke in/out calls, Fle
 - [ ] Tenants moved or Delete jobs `completed`
 - [ ] DIDs released (if not keeping ownership)
 - [ ] Instance **Decom** (or `unregister-instance.sh`)
-- [ ] Magrathea Peer removed
+- [ ] SBC Peer removed
 - [ ] Fail2ban whitelist IP removed
 - [ ] DNS instance A removed/parked
 - [ ] EC2 terminated (EIP decision made)

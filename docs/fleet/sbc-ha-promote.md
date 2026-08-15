@@ -19,7 +19,7 @@ Moving the EIP does **not** move Let’s Encrypt files — Phase D is mandatory.
 This is **not** [SBC backup and restore](sbc-backup-restore.md) (cold DR).
 
 !!! warning "Lab vs live carriers"
-    Do **not** point Magrathea / live `sbc.pbx3.com` at a throwaway pair until this checklist has passed and carriers allowlist the stable address.
+    Do **not** point the live SBC FQDN (`sbc.pbx3.com` in lab) at a throwaway pair until this checklist has passed and carriers allowlist the stable address.
 
 ---
 

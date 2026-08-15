@@ -37,7 +37,7 @@ sudo php artisan pbx3:fleet-preflight
 
 ## Remove from catalog
 
-Prefer the full teardown when retiring the EC2: **[Decommission a fleet instance](decommission-instance.md)** (tenants → Decom → Magrathea → DNS → terminate).
+Prefer the full teardown when retiring the EC2: **[Decommission a fleet instance](decommission-instance.md)** (tenants → Decom → SBC → DNS → terminate).
 
 Catalog-only (node still running):
 

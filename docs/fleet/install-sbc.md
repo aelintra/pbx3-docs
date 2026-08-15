@@ -120,12 +120,15 @@ The QR **issuer** defaults to **`Aelintra SBC`**. Override **before enroll** (or
 
 ```bash
 # in ~/pbx3sbc-admin/.env
-PBX3_TOTP_ISSUER="Aelintra SBC Magrathea"
+PBX3_TOTP_ISSUER="Aelintra SBC"
+# HA pair example — distinct labels per member:
+# PBX3_TOTP_ISSUER="Aelintra SBC active"
+# PBX3_TOTP_ISSUER="Aelintra SBC standby"
 ```
 
 Then `php artisan config:clear` (and reload PHP-FPM if needed).
 
-Use a **distinct** issuer on each edge host (e.g. Magrathea vs companion) so the same admin email does not look identical in the authenticator app. Crypto still works with a shared label; UX does not.
+Use a **distinct** issuer on each edge host (e.g. active vs standby) so the same admin email does not look identical in the authenticator app. Crypto still works with a shared label; UX does not.
 
 There is **no** enroll-time UI to set the issuer — change `.env` first.
 

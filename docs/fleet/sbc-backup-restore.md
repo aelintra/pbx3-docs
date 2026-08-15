@@ -36,7 +36,7 @@ On `https://sbc.pbx3.com/admin` → **System → Backup**:
 - Restore is **not** in the panel — use CLI below on a cold/scratch host.
 - After deploying scripts: `sudo ./scripts/setup-admin-panel-sudoers.sh` (adds `sbc-backup-panel.sh`).
 
-Confirm Magrathea cron + S3: `ls /etc/cron.d/pbx3sbc-backup` and `aws s3 ls s3://08jzwn-pbx3/sbc/sbc/backups/`.
+Confirm SBC cron + S3: `ls /etc/cron.d/pbx3sbc-backup` and `aws s3 ls s3://08jzwn-pbx3/sbc/sbc/backups/`.
 
 ## Warm sync (Fleet — not cold restore)
 
