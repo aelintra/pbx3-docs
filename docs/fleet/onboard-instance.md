@@ -1,6 +1,8 @@
 # Onboard a second instance
 
-Join another healthy node to the org bucket and catalog.
+Join another **already installed** healthy node to the org bucket and catalog (Act 2 only).
+
+For a **new** EC2 from scratch (install → DNS/LE → onboard → Provision edge), use **[Commission a fleet instance](commission-instance.md)** instead.
 
 ## Before you start
 
@@ -8,6 +10,7 @@ Join another healthy node to the org bucket and catalog.
 - Stable `globals.id` / shortuid / fqdn
 - No fleet `.env` yet on the node
 - Ops Mac AWS identity is **not** a node role (`pbx3-node-*`)
+- Fleet service token ready (same as Gatekeeper — see [Commission § Step 6](commission-instance.md#step-6--adopt-into-fleet-onboard))
 
 ## Preferred script (Mac)
 
@@ -25,7 +28,9 @@ export PBX3_ORG_BUCKET=08jzwn-pbx3
 
 ## What it covers
 
-IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, backup upload) → S3 smoke → register catalog → SPA shows a second row.
+IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, fleet token, backup upload) → seed **Egress** → S3 smoke → register catalog → SPA shows a second row.
+
+After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Steps 7–8](commission-instance.md#step-7--sbc-edge-required-before-fleet-create-tenant).
 
 ## Manual debug phases
 

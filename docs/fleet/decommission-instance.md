@@ -11,7 +11,7 @@ This is **not** the same as [Tenant delete](tenant-delete.md). Tenants and insta
 
 !!! tip "Rebuild instead?"
     Same KSUID + restore from S3 → [Rebuild a fleet node from S3](rebuild-from-s3.md).  
-    New box with a **new** KSUID → finish this page, then [Onboard a second instance](onboard-instance.md) / greenfield install.
+    New box with a **new** KSUID → finish this page, then [Commission a fleet instance](commission-instance.md).
 
 ## Before you start
 
@@ -123,7 +123,7 @@ Fleet nodes do **not** publish public tenant A records.
 
 | Goal | Path |
 |------|------|
-| New identity (new KSUID / opaque `{shortuid}.apex`) | Greenfield install + [Onboard](onboard-instance.md) + **Provision edge** (`sip:{PUBLIC_IP}:5060`) |
+| New identity (new KSUID / opaque `{shortuid}.apex`) | [Commission a fleet instance](commission-instance.md) |
 | Same KSUID + latest S3 backup | [Rebuild from S3](rebuild-from-s3.md) |
 
 Then Fleet Create / move tenants back, re-allocate DIDs, smoke in/out calls, Fleet → Catalog reconcile clean.
@@ -139,11 +139,12 @@ Then Fleet Create / move tenants back, re-allocate DIDs, smoke in/out calls, Fle
 - [ ] Fail2ban whitelist IP removed
 - [ ] DNS instance A removed/parked
 - [ ] EC2 terminated (EIP decision made)
-- [ ] (If replacing) onboard + Provision edge + tenants/DIDs restored
+- [ ] (If replacing) [commission](commission-instance.md) + tenants/DIDs restored
 
 ## Related
 
 - [Tenant delete](tenant-delete.md) — per-site wipe + soft catalog meta  
-- [Onboard a second instance](onboard-instance.md) — join a healthy node  
+- [Commission a fleet instance](commission-instance.md) — new home (install → edge)  
+- [Onboard a second instance](onboard-instance.md) — adopt-only for a healthy node  
 - [Rebuild from S3](rebuild-from-s3.md) — same KSUID recovery  
 - Product locks: `FLEET_TENANT_DELETE_REQUIREMENTS.md`, `FLEET_DOMAIN_SETID_LOCK.md` (in `pbx3` / `pbx3-directory`)

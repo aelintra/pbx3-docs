@@ -33,7 +33,8 @@ Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destin
 
 | Task | Page |
 |------|------|
-| Join a healthy node | [Onboard a second instance](onboard-instance.md) |
+| New home (EC2 → install → onboard → edge) | [Commission a fleet instance](commission-instance.md) |
+| Join a healthy node (adopt only) | [Onboard a second instance](onboard-instance.md) |
 | Retire a home (tenants → Decom → SBC → terminate) | [Decommission a fleet instance](decommission-instance.md) |
 | Same KSUID after EC2 loss | [Rebuild from S3](rebuild-from-s3.md) |
 | Wipe one site | [Tenant delete](tenant-delete.md) |

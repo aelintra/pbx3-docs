@@ -86,6 +86,7 @@ nav:
       - Endpoint reference: api/reference.md
   - Fleet operations:
       - Fleet overview: fleet/overview.md
+      - Commission a fleet instance: fleet/commission-instance.md
       - Onboard a second instance: fleet/onboard-instance.md
       - Decommission a fleet instance: fleet/decommission-instance.md
       - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md

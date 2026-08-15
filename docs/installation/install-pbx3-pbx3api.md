@@ -51,4 +51,5 @@ Then open the SPA and [sign in](../getting-started/sign-in.md).
 ## Next
 
 - Solo: [Admin guide](../admin/home-dashboard.md)
-- Fleet: [Onboard](../fleet/onboard-instance.md) after IAM/DNS ready
+- Fleet (new home end-to-end): [Commission a fleet instance](../fleet/commission-instance.md)
+- Fleet (node already up): [Onboard](../fleet/onboard-instance.md)
