@@ -28,3 +28,12 @@ Phones → **sbc.pbx3.com** → **08jzwn** / **bzy54n**; bucket **`08jzwn-pbx3`*
 ## Cross-tenant short dial
 
 Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destination routing prefix + membership mesh. Hand-entered dial prefixes are lab / break-glass only.
+
+## Instance lifecycle
+
+| Task | Page |
+|------|------|
+| Join a healthy node | [Onboard a second instance](onboard-instance.md) |
+| Retire a home (tenants → Decom → SBC → terminate) | [Decommission a fleet instance](decommission-instance.md) |
+| Same KSUID after EC2 loss | [Rebuild from S3](rebuild-from-s3.md) |
+| Wipe one site | [Tenant delete](tenant-delete.md) |

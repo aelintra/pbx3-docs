@@ -17,10 +17,11 @@ Fleet owns delete on fleet-joined nodes (**Rule 14** durable job — not a singl
 ## Notes
 
 - Solo / non-fleet instances still use on-node Sanctum Delete.
-- Catalog **soft-decommission** keeps `meta.json` for audit; S3 backups / recordings are **not** auto-purged.
+- Catalog **soft-decommission** keeps `meta.json` for audit; S3 backups / recordings are **not** auto-purged. Soft-delete **is** the catalog end-state in v1 (no separate “finalize / hard purge” yet).
 - **Media trees** on the node are a known wipe gap (v1).
-- DIDs still attached are warned in preflight — unassign via Fleet DIDs separately (no auto-unassign v1).
-- **FQDN rename** is a separate follow-on job (not part of Delete).
+- DIDs still attached are warned in preflight — **Release** via Fleet DIDs first (release updates Magrathea in the same action; no extra project step).
+- Removing the **home EC2** after tenants are gone: [Decommission a fleet instance](decommission-instance.md).
+- **FQDN rename** is cancelled (naming lock); not part of Delete.
 
 ## Lab check
 

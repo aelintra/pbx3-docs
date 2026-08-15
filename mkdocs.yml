@@ -87,6 +87,7 @@ nav:
   - Fleet operations:
       - Fleet overview: fleet/overview.md
       - Onboard a second instance: fleet/onboard-instance.md
+      - Decommission a fleet instance: fleet/decommission-instance.md
       - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md
       - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
       - Backups in the org bucket: fleet/backups-org-bucket.md

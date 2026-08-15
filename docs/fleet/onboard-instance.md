@@ -37,11 +37,15 @@ sudo php artisan pbx3:fleet-preflight
 
 ## Remove from catalog
 
+Prefer the full teardown when retiring the EC2: **[Decommission a fleet instance](decommission-instance.md)** (tenants → Decom → Magrathea → DNS → terminate).
+
+Catalog-only (node still running):
+
 ```bash
 ./unregister-instance.sh --id {KSUID}          # soft
 ./unregister-instance.sh --id {KSUID} --remove # hard catalog row
 ```
 
-Does not delete S3 backups or stop calls.
+Does not delete S3 backups or stop calls. SPA: Fleet → **Instances** → **Decom**.
 
 Also: [Cloud / S3](../cloud/bucket-layout-cors.md), [Agent-assisted](agent-assisted.md).
