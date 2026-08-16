@@ -2,6 +2,8 @@
 
 Run **one** PBX3 instance without fleet catalog, org S3, Gatekeeper, or SBC.
 
+**Install the stack first:** [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md) (clone → debs → API → DNS → LE). This page is sign-in and solo scope only.
+
 ## What you need
 
 | Need | Do not need |
@@ -31,4 +33,4 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://08jzwn.pbx3.com:44300/up
 # expect 200 (no -k)
 ```
 
-When you outgrow solo, see [Fleet overview](../fleet/overview.md) and [Onboard a second instance](../fleet/onboard-instance.md).
+When you outgrow solo, see [Fleet overview](../fleet/overview.md) and [Commission a fleet instance](../fleet/commission-instance.md) / [Onboard](../fleet/onboard-instance.md).
