@@ -31,17 +31,23 @@ This creates a **new KSUID**. It is **not** the same as [Rebuild a fleet node fr
 
 ### Worksheet (fill as you go)
 
+Put comments on their **own** lines (zsh often mishandles `# …` on the same line as `export`). Use **straight** quotes only.
+
 ```bash
 export AWS_DEFAULT_REGION=us-east-1
 export KEY_FILE=/path/to/your.pem
 export PBX3_ORG_BUCKET=08jzwn-pbx3
 export LE_EMAIL=you@example.com
-export SITE_NAME='Sirius'          # friendly Name — not the hostname
-export INSTANCE_ID=i-…             # after launch
-export PUBLIC_IP=…                 # EIP
-export SHORTUID=…                  # after installer
-export INSTANCE_FQDN=…             # e.g. abc12x.pbx3.com
-export KSUID=…                     # globals.id
+
+# Friendly Name — not the hostname
+export SITE_NAME='Sirius'
+
+# After launch / install — fill as you go:
+# export INSTANCE_ID=i-…
+# export PUBLIC_IP=…
+# export SHORTUID=…
+# export INSTANCE_FQDN=…
+# export KSUID=…
 ```
 
 ---
@@ -67,8 +73,10 @@ Allocate an **Elastic IP** and associate it. Save both values in the worksheet:
 - **`INSTANCE_ID`** (`i-…`) — needed later for [Step 6 onboard](#step-6--adopt-into-fleet-onboard) (`--instance-id`); not used for SSH
 
 ```bash
-export PUBLIC_IP=…          # EIP after associate
-export INSTANCE_ID=i-…      # EC2 instance id — keep for onboard
+# EIP after associate
+export PUBLIC_IP=…
+# EC2 instance id — keep for onboard
+export INSTANCE_ID=i-…
 export SSH_HOST=ubuntu@${PUBLIC_IP}
 ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" 'hostname; uname -m'
 ```
@@ -134,9 +142,10 @@ sqlite3 /opt/pbx3/db/sqlite.db \
 Copy into the worksheet:
 
 ```bash
-export KSUID=…              # id column
-export SHORTUID=…           # shortuid column
-export INSTANCE_FQDN=…      # fqdn column — use in Step 5 DNS/LE
+# id / shortuid / fqdn columns — FQDN used in Step 5 DNS/LE
+export KSUID=…
+export SHORTUID=…
+export INSTANCE_FQDN=…
 ```
 
 Catalog and S3 paths use the **KSUID**, not the shortuid.

@@ -34,14 +34,25 @@ There is **no** monorepo. GitHub has separate repos. Release `.deb`s live at the
 
 ### Worksheet
 
+Use **straight** quotes only. Put comments on their **own** lines — zsh often treats `# …` on the same line as `export` as more arguments (so `# or user@host` becomes `export: not valid in this context: user@host`).
+
 ```bash
-export KEY_FILE=/path/to/your.pem          # if SSH uses a key
-export SSH_HOST=ubuntu@YOUR.PUBLIC.IP      # or user@host
+# SSH key path (omit KEY_FILE later if your agent already has the key)
+export KEY_FILE=/path/to/your.pem
+
+# SSH target
+export SSH_HOST=ubuntu@YOUR.PUBLIC.IP
+
 export LE_EMAIL=you@example.com
-export SITE_NAME='My node'                 # friendly Name — not the hostname
-export DOMAIN_TLD=pbx3.com                 # apex; installer mints opaque shortuid
-# After installer (Step 4):
-# export INSTANCE_FQDN=…   # from sqlite — e.g. 7k2m9q.pbx3.com
+
+# Friendly Name — not the hostname
+export SITE_NAME='My node'
+
+# Apex; installer mints opaque shortuid → fqdn={shortuid}.{apex}
+export DOMAIN_TLD=pbx3.com
+
+# After installer (Step 4), from sqlite fqdn column, e.g. 7k2m9q.pbx3.com:
+# export INSTANCE_FQDN=…
 ```
 
 ---
@@ -131,7 +142,8 @@ sqlite3 /opt/pbx3/db/sqlite.db \
 ```
 
 ```bash
-export INSTANCE_FQDN=…    # fqdn column — use for DNS and LE below
+# fqdn column — use for DNS and LE below
+export INSTANCE_FQDN=…
 ```
 
 !!! warning
