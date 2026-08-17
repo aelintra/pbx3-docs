@@ -134,6 +134,23 @@ Omit `PBX3_ADMIN_*` to answer prompts on a real TTY. Details: [First-run install
 
 **Do not** pass vanity `INSTANCE_FQDN=kildare.pbx3.com` unless you intentionally set `PBX3_ALLOW_VANITY_FQDN=1`.
 
+Verify an admin was created (installer end banner also reports this on current `installer.sh`):
+
+```bash
+sqlite3 /opt/pbx3/db/sqlite.db "SELECT id,email FROM users;"
+# must show at least one row
+```
+
+If empty (older packages called bootstrap with `/bin/sh` and silently failed), create one:
+
+```bash
+sudo PBX3_ADMIN_EMAIL='you@yourdomain.com' \
+  PBX3_ADMIN_PASSWORD='choose-a-strong-password' \
+  /opt/pbx3/scripts/bootstrap-admin-user.sh
+# or interactive on a real TTY:
+# sudo /opt/pbx3/scripts/bootstrap-admin-user.sh
+```
+
 ### Required — record identity before DNS / LE
 
 The installer mints these; they are **not** the SSH nickname (e.g. `virginia1.pbx3.com`). Newer installer builds print a final **Instance identity** block; always capture them either way:
@@ -303,6 +320,7 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 | Laptop curl to `:44300` times out (~5–130s) | SG: add your public IP `/32` on **44300** (port 80 open is not enough) |
 | LE fails `example.com` contact | Use a real email — Let’s Encrypt rejects `*.example.com` |
 | `/up` not 200 on localhost | pbx3api installer, nginx default site, PHP-FPM |
+| SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` (see Step 4). Fixed in installer: must call bootstrap with **bash**, not `sh` |
 ## Next
 
 | Goal | Go to |
