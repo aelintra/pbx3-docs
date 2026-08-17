@@ -134,17 +134,25 @@ Omit `PBX3_ADMIN_*` to answer prompts on a real TTY. Details: [First-run install
 
 **Do not** pass vanity `INSTANCE_FQDN=kildare.pbx3.com` unless you intentionally set `PBX3_ALLOW_VANITY_FQDN=1`.
 
-Read identity (this is where the FQDN appears):
+### Required — record identity before DNS / LE
+
+The installer mints these; they are **not** the SSH nickname (e.g. `virginia1.pbx3.com`). Newer installer builds print a final **Instance identity** block; always capture them either way:
 
 ```bash
+# On the node — shows KSUID | shortuid | fqdn | sitename
 sqlite3 /opt/pbx3/db/sqlite.db \
   "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
+
+# Export into this shell (and your Mac worksheet) — required before dig / LE
+export KSUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT id FROM globals WHERE pkey='global';")
+export SHORTUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT shortuid FROM globals WHERE pkey='global';")
+export INSTANCE_FQDN=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT fqdn FROM globals WHERE pkey='global';")
+echo "KSUID=$KSUID"
+echo "SHORTUID=$SHORTUID"
+echo "INSTANCE_FQDN=$INSTANCE_FQDN"
 ```
 
-```bash
-# fqdn column — use for DNS and LE below
-export INSTANCE_FQDN=…
-```
+Do **not** continue to Step 7 until `echo "$INSTANCE_FQDN"` prints a real name (e.g. `xhcjkh.pbx3.com`). Empty → `dig` fails with `'' is not a legal name`.
 
 !!! warning
     Do **not** run `reloader.sh` after a clean first install.  
@@ -200,6 +208,8 @@ sudo php artisan config:clear
 
 ## Step 6 — Prove the stack (before DNS)
 
+**On the node**, use loopback — not the public FQDN:
+
 ```bash
 curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 # expect 200
@@ -208,6 +218,16 @@ sudo systemctl is-active nginx php8.3-fpm asterisk
 ```
 
 **Stop if not 200.** DNS and LE will not fix a broken API.
+
+!!! warning "AWS hairpin — do not curl the public FQDN from the node"
+    On EC2, `curl https://$INSTANCE_FQDN:44300/up` **from the instance itself** usually **times out**. The box cannot open TCP to its own public IP/EIP. That is normal.
+
+    | Where | Command |
+    |-------|---------|
+    | **On the node** | `https://127.0.0.1:44300/up` (use `-k` until LE) |
+    | **Ops laptop / Mac** | `https://${INSTANCE_FQDN}:44300/up` |
+
+    Also open **AWS security group TCP 44300** to your **ops public IP `/32`** (and Gatekeeper if fleet). Port **80** `0.0.0.0/0` only covers Let’s Encrypt — it does **not** open the API.
 
 If nginx complains about a duplicate `default_server` on port 80:
 
@@ -220,11 +240,15 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## Step 7 — DNS
 
+Requires **`INSTANCE_FQDN`** from [Step 4](#required--record-identity-before-dns--le). If unset, stop and export it — do not dig an empty name.
+
 | Name | Type | Value |
 |------|------|--------|
-| Exact `globals.fqdn` (e.g. `7k2m9q.pbx3.com`) | **A** | Node public IP / EIP |
+| Exact `globals.fqdn` (e.g. `xhcjkh.pbx3.com`) | **A** | Node public IP / EIP |
 
 ```bash
+test -n "$INSTANCE_FQDN" || { echo "INSTANCE_FQDN not set — re-run Step 4 exports"; exit 1; }
+echo "Checking DNS for $INSTANCE_FQDN"
 dig +short "$INSTANCE_FQDN"
 # must equal this node’s public IP
 ```
@@ -244,12 +268,18 @@ sudo /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
 
 Or SPA → **Certificates → Get certificate** after snakeoil login. Full notes: [First Let's Encrypt certificate](../tls/first-letsencrypt.md).
 
+**Prove trusted HTTPS from the ops laptop** (not from the node — see hairpin warning in Step 6). SG must allow your Mac’s public IP on **44300**:
+
 ```bash
-curl -sS -o /dev/null -w "%{http_code}\n" "https://${INSTANCE_FQDN}:44300/up"
-# prefer 200 without -k
+# On the Mac / ops workstation
+curl -4 -sS --connect-timeout 5 --max-time 10 -o /dev/null -w "%{http_code}\n" "https://${INSTANCE_FQDN}:44300/up"
+# expect 200 without -k
+
+# On the node only:
+curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 ```
 
-Open the Admin SPA and [sign in](../getting-started/sign-in.md) with the email/password from Step 4. API base URL example: `https://${INSTANCE_FQDN}:44300/api`.
+Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.md) with the email/password from Step 4. API base URL example: `https://${INSTANCE_FQDN}:44300/api`.
 
 ---
 
@@ -259,11 +289,20 @@ Open the Admin SPA and [sign in](../getting-started/sign-in.md) with the email/p
 - [ ] Copied debs to node; `apt install` succeeded
 - [ ] `installer.sh` created KSUID / opaque FQDN / admin user
 - [ ] pbx3api at `/opt/pbx3api`; API installer run
-- [ ] `GET https://127.0.0.1:44300/up` → **200**
+- [ ] `GET https://127.0.0.1:44300/up` → **200** (on node)
 - [ ] DNS **A** for `globals.fqdn` → public IP
-- [ ] Let’s Encrypt applied; trusted `/up` → **200**
-- [ ] Admin SPA login works
+- [ ] Let’s Encrypt applied
+- [ ] From **ops laptop**: trusted `https://{fqdn}:44300/up` → **200** (SG allows your IP on 44300)
+- [ ] Admin SPA login works from the laptop
 
+## Failure cheat sheet
+
+| Symptom | Likely fix |
+|---------|------------|
+| On node, `curl https://$INSTANCE_FQDN:44300/up` hangs | Expected hairpin — use `127.0.0.1` on the node; public URL from the laptop |
+| Laptop curl to `:44300` times out (~5–130s) | SG: add your public IP `/32` on **44300** (port 80 open is not enough) |
+| LE fails `example.com` contact | Use a real email — Let’s Encrypt rejects `*.example.com` |
+| `/up` not 200 on localhost | pbx3api installer, nginx default site, PHP-FPM |
 ## Next
 
 | Goal | Go to |

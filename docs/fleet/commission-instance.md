@@ -132,23 +132,21 @@ Omit `PBX3_ADMIN_*` to answer interactive prompts on a real TTY. There is **no**
 
 **Do not** pass `INSTANCE_FQDN=kildare.pbx3.com` (vanity host). That path is rejected unless you intentionally break-glass with `PBX3_ALLOW_VANITY_FQDN=1`.
 
-After install, **read** identity (this is where FQDN appears):
+### Required — record identity before DNS / LE
+
+Newer installer builds print a final **Instance identity** block (KSUID, shortuid, fqdn). Always capture into the worksheet:
 
 ```bash
 sqlite3 /opt/pbx3/db/sqlite.db \
   "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
+
+export KSUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT id FROM globals WHERE pkey='global';")
+export SHORTUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT shortuid FROM globals WHERE pkey='global';")
+export INSTANCE_FQDN=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT fqdn FROM globals WHERE pkey='global';")
+echo "KSUID=$KSUID SHORTUID=$SHORTUID INSTANCE_FQDN=$INSTANCE_FQDN"
 ```
 
-Copy into the worksheet:
-
-```bash
-# id / shortuid / fqdn columns — FQDN used in Step 5 DNS/LE
-export KSUID=…
-export SHORTUID=…
-export INSTANCE_FQDN=…
-```
-
-Catalog and S3 paths use the **KSUID**, not the shortuid.
+Do **not** continue to DNS until `INSTANCE_FQDN` is non-empty. Catalog and S3 paths use the **KSUID**, not the shortuid.
 
 !!! warning "Do not yet"
     Do **not** set `PBX3_ORG_BUCKET` by hand — onboard owns fleet `.env`.  
@@ -168,11 +166,14 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo /opt/pbx3api/scripts/installer.sh
 
 curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
-# expect 200
+# expect 200 — on the node use loopback only
 sudo systemctl is-active nginx php8.3-fpm asterisk
 ```
 
 **Stop if not 200.** Onboard will not fix a broken API.
+
+!!! warning "AWS hairpin"
+    Do **not** `curl https://$INSTANCE_FQDN:44300/up` from the EC2 itself — it times out. Prove public HTTPS from the **ops Mac**. Open SG **TCP 44300** to your Mac `/32` (Gatekeeper `/32` alone is not enough for SPA). Details: [Install § Step 6](../installation/install-pbx3-pbx3api.md#step-6--prove-the-stack-before-dns).
 
 Also see [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md).
 
@@ -190,8 +191,12 @@ Fleet nodes do **not** publish public tenant A records.
 dig +short "$INSTANCE_FQDN"   # must equal PUBLIC_IP
 sudo /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
 # staging: sudo PBX3_LE_STAGING=1 /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
+```
 
-curl -sS -o /dev/null -w "%{http_code}\n" "https://${INSTANCE_FQDN}:44300/up"
+**From the ops Mac** (not the node):
+
+```bash
+curl -4 -sS --connect-timeout 5 --max-time 10 -o /dev/null -w "%{http_code}\n" "https://${INSTANCE_FQDN}:44300/up"
 # prefer 200 without -k
 ```
 
@@ -310,7 +315,9 @@ Do **not** invent node-only tenants that are missing from the catalog.
 | Symptom | Likely fix |
 |---------|------------|
 | `/up` not 200 | pbx3api installer, nginx default site, PHP-FPM |
-| LE fails | DNS A wrong; SG/Shorewall port 80 |
+| Public FQDN curl hangs **on the node** | AWS hairpin — use `127.0.0.1` on box; public URL from Mac |
+| Mac curl `:44300` times out | SG: add ops public IP `/32` on 44300 (not only Gatekeeper) |
+| LE fails | DNS A wrong; SG/Shorewall port 80; real email (not `example.com`) |
 | Onboard AWS error | Mac using `pbx3-node-*` role — switch to ops identity |
 | Preflight S3 red | IAM attach lag; empty `AWS_ACCESS_KEY_*` in `.env` |
 | Fleet Create: no setid | Step 7a Provision edge |
