@@ -7,11 +7,11 @@ This page is the **stack only** (solo or the install half of a fleet home). It d
 | After this page | Continue at |
 |-----------------|-------------|
 | Stay solo | [Solo trial](../getting-started/solo-trial.md) |
-| **New fleet home** (you just finished Install) | [Commission a fleet instance](../fleet/commission-instance.md) → **Step 3 Adopt** |
+| **New fleet home** (you just finished Install) | [Commission a fleet instance](../fleet/commission-instance.md) → **Step 1 Adopt** |
 | Node already up; adopt only | [Onboard](../fleet/onboard-instance.md) |
 
 !!! tip "New EC2 into the fleet end-to-end"
-    Start at [Commission](../fleet/commission-instance.md) (EC2 → this Install page → onboard → edge). Do not duplicate stack steps from Commission — it links here for Phase 2.
+    Do this Install page first (includes bringing up the host for LE). Then [Commission](../fleet/commission-instance.md) for onboard + edge — Commission does not repeat EC2/DNS/LE.
 
 ## What you are installing
 
@@ -332,14 +332,14 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 
 **Solo install complete.** If this box should join the fleet:
 
-→ **[Commission a fleet instance — Step 3 Adopt](../fleet/commission-instance.md#step-3--adopt-into-fleet-onboard)**  
+→ **[Commission a fleet instance — Step 1 Adopt](../fleet/commission-instance.md#step-1--adopt-into-fleet-onboard)**  
 (`onboard-fleet-instance.sh` → Provision edge → Fail2ban)
 
 | Goal | Go to |
 |------|--------|
 | Stay solo | [Solo trial](../getting-started/solo-trial.md) · [Admin guide](../admin/home-dashboard.md) |
-| New fleet home (EC2 + install + adopt + edge) | [Commission](../fleet/commission-instance.md) from the top |
-| Adopt only (Install already done) | [Onboard](../fleet/onboard-instance.md) or Commission Step 3 |
+| New fleet home (after Install) | [Commission](../fleet/commission-instance.md) |
+| Adopt only | [Onboard](../fleet/onboard-instance.md) or Commission Step 1 |
 | Same KSUID after EC2 loss | [Rebuild from S3](../fleet/rebuild-from-s3.md) |
 
 ## Related

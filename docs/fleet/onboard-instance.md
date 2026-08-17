@@ -2,7 +2,7 @@
 
 Join a node that **already finished** [Install](../installation/install-pbx3-pbx3api.md) to the org bucket and catalog (adopt only).
 
-For a **new** fleet home (EC2 → install → adopt → edge), use **[Commission a fleet instance](commission-instance.md)** — after Install, that is Commission **Step 3**.
+For a **new** fleet home: finish [Install](../installation/install-pbx3-pbx3api.md), then **[Commission Step 1](commission-instance.md#step-1--adopt-into-fleet-onboard)** (onboard → edge).
 
 ## Before you start
 
@@ -10,7 +10,7 @@ For a **new** fleet home (EC2 → install → adopt → edge), use **[Commission
 - Stable `globals.id` / shortuid / fqdn
 - No fleet `.env` yet on the node
 - Ops Mac AWS identity is **not** a node role (`pbx3-node-*`)
-- Fleet service token ready (same as Gatekeeper — see [Commission § Step 3](commission-instance.md#step-3--adopt-into-fleet-onboard))
+- Fleet service token ready (same as Gatekeeper — see [Commission § Step 1](commission-instance.md#step-1--adopt-into-fleet-onboard))
 
 ## Preferred script (Mac)
 
@@ -30,7 +30,7 @@ export PBX3_ORG_BUCKET=08jzwn-pbx3
 
 IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, fleet token, backup upload) → seed **Egress** → S3 smoke → register catalog → SPA shows a second row.
 
-After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Step 4](commission-instance.md#step-4--sbc-edge-required-before-fleet-create-tenant).
+After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Step 2](commission-instance.md#step-2--sbc-edge-required-before-fleet-create-tenant).
 
 ## Manual debug phases
 
