@@ -131,12 +131,12 @@ You do **not** type the FQDN. You supply the **apex**; the installer mints an op
 ```bash
 sudo DOMAIN_TLD="${DOMAIN_TLD}" \
   INSTANCE_SITENAME="${SITE_NAME}" \
-  PBX3_ADMIN_EMAIL=ops@example.com \
-  PBX3_ADMIN_PASSWORD='choose-a-strong-password' \
+  PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" \
+  PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
   /opt/pbx3/scripts/installer.sh
 ```
 
-Omit `PBX3_ADMIN_*` to answer prompts on a real TTY. Details: [First-run installer](first-run.md).
+Use your real SPA login email/password in the worksheet exports (`ADMIN_EMAIL` / `ADMIN_PASSWORD`). Omit `PBX3_ADMIN_*` to answer prompts on a real TTY. Details: [First-run installer](first-run.md).
 
 **Do not** pass vanity `INSTANCE_FQDN=kildare.pbx3.com` unless you intentionally set `PBX3_ALLOW_VANITY_FQDN=1`.
 
@@ -144,19 +144,18 @@ Verify an admin was created (installer end banner also reports this on current `
 
 ```bash
 sqlite3 /opt/pbx3/db/sqlite.db "SELECT id,email FROM users;"
-# must show at least one row
+# must show at least one row — email must be yours, not a docs placeholder
 ```
 
-If empty (older packages called bootstrap with `/bin/sh` and silently failed), create one:
+If empty (older packages called bootstrap with `/bin/sh` and silently failed), create one with **your** address:
 
 ```bash
-sudo PBX3_ADMIN_EMAIL='you@yourdomain.com' \
-  PBX3_ADMIN_PASSWORD='choose-a-strong-password' \
+sudo PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" \
+  PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
   /opt/pbx3/scripts/bootstrap-admin-user.sh
 # or interactive on a real TTY:
 # sudo /opt/pbx3/scripts/bootstrap-admin-user.sh
 ```
-
 ### Required — record identity before DNS / LE
 
 The installer mints these; they are **not** the SSH nickname (e.g. `virginia1.pbx3.com`). Newer installer builds print a final **Instance identity** block; always capture them either way:
@@ -217,14 +216,27 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo /opt/pbx3api/scripts/installer.sh
 ```
 
+The installer (current tip):
+
+- points Laravel at `/opt/pbx3/db/sqlite.db`
+- runs **`php artisan migrate --force` as `www-data`** (adds Sanctum/2FA/privilege columns on the shared DB)
+- keeps **`storage/logs/laravel.log` writable by `www-data`** (root-owned log → SPA login **500**)
+
 API listens on **`https://<host>:44300`** (snakeoil until Step 7).
 
-Optional tidy:
+Do **not** run `sudo php artisan …` afterward as root — that recreates root-owned logs. If you need artisan:
+
+```bash
+cd /opt/pbx3api
+sudo -u www-data php artisan migrate --force
+sudo -u www-data php artisan config:clear
+```
+
+Optional if `vendor/` is missing (installer usually runs composer):
 
 ```bash
 cd /opt/pbx3api
 sudo composer install --no-dev
-sudo php artisan config:clear
 ```
 
 ---
@@ -311,7 +323,7 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 - [ ] Cloned `pbx3` + `pbx3cagi` on laptop; `.deb`s present
 - [ ] Copied debs to node; `apt install` succeeded
 - [ ] `installer.sh` created KSUID / opaque FQDN / admin user
-- [ ] pbx3api at `/opt/pbx3api`; API installer run
+- [ ] pbx3api at `/opt/pbx3api`; API installer run (**migrate as www-data**; log writable)
 - [ ] `GET https://127.0.0.1:44300/up` → **200** (on node)
 - [ ] DNS **A** for `globals.fqdn` → public IP
 - [ ] Let’s Encrypt applied
@@ -326,7 +338,9 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 | Laptop curl to `:44300` times out (~5–130s) | SG: add your public IP `/32` on **44300** (port 80 open is not enough) |
 | LE fails `example.com` contact | Use a real email — Let’s Encrypt rejects `*.example.com` |
 | `/up` not 200 on localhost | pbx3api installer, nginx default site, PHP-FPM |
-| SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` (see Step 4). Fixed in installer: must call bootstrap with **bash**, not `sh` |
+| SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` with **your** email (see Step 4). Installer must call bootstrap with **bash**, not `sh` |
+| SPA “Cannot reach API” but `curl …/up` is 200 | Often login **500**: root-owned `storage/logs/laravel.log` or missing migrate columns. Fix: `sudo chown www-data:www-data /opt/pbx3api/storage/logs/laravel.log` and `sudo -u www-data php artisan migrate --force` |
+| `sudo php artisan …` after install | Prefer `sudo -u www-data php artisan …` — root recreates the log-ownership trap |
 
 ## Next
 
