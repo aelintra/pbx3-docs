@@ -38,13 +38,15 @@ When it finishes, open in a browser:
 - Health: `http://192.168.1.33/health` → `{"status":"ok"}`
 - Catalog: `http://192.168.1.33/catalog/instance-index.json` → `"instances": []` until you adopt a home
 
-SPA **Fleet** mode talks to `http://192.168.1.33` with the email/password you set. Keys stay on the box.
+The installer also enables **`pbx3-fleet-probe.timer`** (home `/up` every minute so Fleet stays **Healthy** after adopt). Keys stay on the box.
+
+SPA **Fleet** mode talks to `http://192.168.1.33` with the email/password you set.
 
 Re-run is safe with the same answers (it will not rotate tokens).
 
 ## Next
 
-1. Home VM: [Install pbx3 and pbx3api](install-pbx3-pbx3api.md) (skip CAGI on ARM guests).
-2. Adopt the home from Fleet (panel when shipped; ops CLI is not the Lab happy path).
+1. Home VM: [Install the Lab home PBX](install-lab-home.md) (`sudo ./install-home-host.sh`).
+2. [Adopt the home](install-lab-adopt.md) from Fleet (**Instances → Register instance**).
 
 OpenSIPS / calls are **not** part of this page.

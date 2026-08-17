@@ -56,6 +56,8 @@ nav:
       - Requirements: installation/requirements.md
       - Install pbx3 and pbx3api: installation/install-pbx3-pbx3api.md
       - Lab control host: installation/install-lab-control.md
+      - Lab home PBX: installation/install-lab-home.md
+      - Lab adopt home: installation/install-lab-adopt.md
       - First-run installer: installation/first-run.md
       - Upgrade a package: installation/upgrade.md
       - Restore from backup: installation/restore-from-backup.md
