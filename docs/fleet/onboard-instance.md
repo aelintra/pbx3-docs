@@ -10,7 +10,7 @@ For a **new** fleet home (EC2 → install → adopt → edge), use **[Commission
 - Stable `globals.id` / shortuid / fqdn
 - No fleet `.env` yet on the node
 - Ops Mac AWS identity is **not** a node role (`pbx3-node-*`)
-- Fleet service token ready (same as Gatekeeper — see [Commission § Step 6](commission-instance.md#step-6--adopt-into-fleet-onboard))
+- Fleet service token ready (same as Gatekeeper — see [Commission § Step 3](commission-instance.md#step-3--adopt-into-fleet-onboard))
 
 ## Preferred script (Mac)
 
@@ -30,7 +30,7 @@ export PBX3_ORG_BUCKET=08jzwn-pbx3
 
 IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, fleet token, backup upload) → seed **Egress** → S3 smoke → register catalog → SPA shows a second row.
 
-After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Steps 7–8](commission-instance.md#step-7--sbc-edge-required-before-fleet-create-tenant).
+After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Step 4](commission-instance.md#step-4--sbc-edge-required-before-fleet-create-tenant).
 
 ## Manual debug phases
 
