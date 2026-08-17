@@ -1,53 +1,49 @@
 # Commission a fleet instance
 
-Bring up a **new home box** (EC2 / node) and join it to the fleet: install → DNS/LE → onboard → SBC edge → smoke.
+Bring a **new home** into an existing fleet: launch EC2 → **install the stack** → onboard → SBC edge.
 
-This creates a **new KSUID**. It is **not** the same as [Rebuild a fleet node from S3](rebuild-from-s3.md) (same identity after EC2 loss).
+This creates a **new KSUID**. It is **not** [Rebuild from S3](rebuild-from-s3.md) (same identity after EC2 loss).
 
-| Object | What you create |
-|--------|-----------------|
-| **Instance** (Asterisk node) | New EC2 + packages + catalog row |
-| **Edge membership** | Dispatcher setid + Asterisk Peer via **Provision edge** |
-| **Tenant** (optional later) | Fleet → **Tenants** → Create (needs setid first) |
+| Phase | What | Where the detail lives |
+|-------|------|------------------------|
+| **1** | Launch EC2 + EIP + SG | This page |
+| **2** | Packages → identity → API → DNS → LE → admin SPA | **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** (do that page end-to-end) |
+| **3** | Fleet adopt (IAM, catalog, Egress) | This page (onboard) |
+| **4** | Provision edge + Fail2ban | This page |
 
-!!! tip "Already installed, only need fleet join?"
-    Jump to [Onboard a second instance](onboard-instance.md) (Act 2 only).  
-    Retiring a box → [Decommission a fleet instance](decommission-instance.md).
+!!! tip "Already finished Install?"
+    Skip to [Step 3 — Adopt into fleet](#step-3--adopt-into-fleet-onboard).  
+    Stack-only / solo stop → [Install](../installation/install-pbx3-pbx3api.md).  
+    Retire a home → [Decommission](decommission-instance.md).
 
 ## Before you start
 
 | Have it? | Thing |
 |:--------:|-------|
-| ☐ | **AWS** rights: EC2, EIP, SG, IAM (roles / instance profiles), S3 catalog |
+| ☐ | Everything on the [Install](../installation/install-pbx3-pbx3api.md) “Before you start” list (clones, debs, DNS, LE email, admin password) |
+| ☐ | **AWS** rights: EC2, EIP, SG, IAM, S3 catalog |
 | ☐ | **Ops AWS identity** on Mac (`aws sts get-caller-identity` — **not** `pbx3-node-*`) |
-| ☐ | SSH key + `.pem` (`chmod 400`) |
-| ☐ | Clones of **`pbx3`** + **`pbx3cagi`** on `main` with release `.deb`s at repo root |
 | ☐ | Existing fleet **org bucket** (lab: `08jzwn-pbx3`) — do **not** invent a per-node bucket |
-| ☐ | **Fleet service token** (same value as Gatekeeper — see Step 6) |
-| ☐ | DNS control for apex (lab: `pbx3.com`) |
-| ☐ | Email for Let’s Encrypt + friendly **Name** (e.g. Sirius) |
+| ☐ | **Fleet service token** (same value as Gatekeeper — see Step 3) |
 
-**Lab packages (adjust when newer):** `pbx3_0.0.5-5_all.deb` · `pbx3cagi_1.0.0-18_all.deb`.
+### Worksheet
 
-### Worksheet (fill as you go)
-
-Put comments on their **own** lines (zsh often mishandles `# …` on the same line as `export`). Use **straight** quotes only.
+Put comments on their **own** lines (zsh). Use **straight** quotes only.
 
 ```bash
 export AWS_DEFAULT_REGION=us-east-1
 export KEY_FILE=/path/to/your.pem
 export PBX3_ORG_BUCKET=08jzwn-pbx3
-export LE_EMAIL=you@example.com
 
-# Friendly Name — not the hostname
-export SITE_NAME='Sirius'
-
-# After launch / install — fill as you go:
+# After launch:
 # export INSTANCE_ID=i-…
 # export PUBLIC_IP=…
+# export SSH_HOST=ubuntu@…
+
+# After Install (from node sqlite / installer banner):
+# export KSUID=…
 # export SHORTUID=…
 # export INSTANCE_FQDN=…
-# export KSUID=…
 ```
 
 ---
@@ -60,22 +56,20 @@ Ubuntu **24.04** LTS. Prefer ARM (`t4g.medium`) unless the fleet is already on x
 
 | Port | Why |
 |------|-----|
-| **22/tcp** | SSH (lock to your IP in production) |
-| **80/tcp** | Let’s Encrypt HTTP-01 |
-| **44300/tcp** | pbx3api HTTPS |
-| SIP / RTP as needed | Phones / tests (optional on install day) |
+| **22/tcp** | SSH |
+| **80/tcp** | Let’s Encrypt (`0.0.0.0/0` is fine) |
+| **44300/tcp** | API/SPA — allow **ops Mac `/32`** and **Gatekeeper `/32`** (port 80 alone is not enough) |
+| SIP / RTP as needed | Optional on install day |
 
 Outbound **443** required (apt, S3, LE).
 
-Allocate an **Elastic IP** and associate it. Save both values in the worksheet:
+Allocate an **Elastic IP** and associate it:
 
-- **`PUBLIC_IP`** — used now for SSH / DNS / Provision edge  
-- **`INSTANCE_ID`** (`i-…`) — needed later for [Step 6 onboard](#step-6--adopt-into-fleet-onboard) (`--instance-id`); not used for SSH
+- **`PUBLIC_IP`** — SSH, DNS, Provision edge  
+- **`INSTANCE_ID`** (`i-…`) — required later for onboard `--instance-id`
 
 ```bash
-# EIP after associate
 export PUBLIC_IP=…
-# EC2 instance id — keep for onboard
 export INSTANCE_ID=i-…
 export SSH_HOST=ubuntu@${PUBLIC_IP}
 ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" 'hostname; uname -m'
@@ -83,136 +77,25 @@ ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" 'hostname; 
 
 ---
 
-## Step 2 — Copy packages and OS prep
+## Step 2 — Install the stack (full Install guide)
 
-**Mac:**
+Do **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** completely on this host:
 
-```bash
-export PBX3_DEB=~/GiT/pbx3-master/pbx3/pbx3_0.0.5-5_all.deb
-export CAGI_DEB=~/GiT/pbx3-master/pbx3cagi/pbx3cagi_1.0.0-18_all.deb
-scp -i "$KEY_FILE" "$PBX3_DEB" "$CAGI_DEB" "${SSH_HOST}:/tmp/"
-```
+copy debs → `installer.sh` → pbx3api → prove `/up` on **127.0.0.1** → DNS **A** for opaque `globals.fqdn` → Let’s Encrypt → SPA admin user → trusted `/up` from the **Mac**.
 
-**Node:**
+Do **not** set `PBX3_ORG_BUCKET` by hand during Install — onboard owns fleet `.env`.
 
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y ssmtp sqlite3 curl ca-certificates git
-sudo chmod +x /etc/ssmtp
-cd /tmp
-sudo apt install -y ./pbx3_0.0.5-5_all.deb ./pbx3cagi_1.0.0-18_all.deb
-dpkg-query -W pbx3 pbx3cagi
-```
-
-`apt install` does **not** create the DB. Next step does.
+When Install’s checklist is done, copy identity into this worksheet (`KSUID`, `SHORTUID`, `INSTANCE_FQDN`) and continue here.
 
 ---
 
-## Step 3 — First-run installer (identity)
+## Step 3 — Adopt into fleet (onboard)
 
-You do **not** type the FQDN. You supply the **apex**; the installer mints an opaque **shortuid** and writes `fqdn = {shortuid}.{apex}`.
+Run from the **ops Mac**, not as the node IAM role. Same script as [Onboard](onboard-instance.md); this is the new-home path’s adopt step.
 
-| You provide | Installer derives / writes |
-|-------------|----------------------------|
-| `DOMAIN_TLD` (apex), e.g. `pbx3.com` | `shortuid` (opaque 6-char) |
-| `INSTANCE_SITENAME` (friendly **Name**, e.g. Sirius) | `fqdn` = `{shortuid}.pbx3.com` |
-| Admin email + password (SPA login) | `globals.id` (**KSUID** — catalog / S3 key) |
+### 3a — Fleet service token
 
-Example: apex `pbx3.com` → shortuid `7k2m9q` → FQDN **`7k2m9q.pbx3.com`**. That FQDN is what Step 5 DNS and LE use.
-
-```bash
-sudo DOMAIN_TLD=pbx3.com \
-  INSTANCE_SITENAME="${SITE_NAME}" \
-  PBX3_ADMIN_EMAIL=ops@example.com \
-  PBX3_ADMIN_PASSWORD='choose-a-strong-password' \
-  /opt/pbx3/scripts/installer.sh
-```
-
-Omit `PBX3_ADMIN_*` to answer interactive prompts on a real TTY. There is **no** factory SPA password — remember what you set.
-
-**Do not** pass `INSTANCE_FQDN=kildare.pbx3.com` (vanity host). That path is rejected unless you intentionally break-glass with `PBX3_ALLOW_VANITY_FQDN=1`.
-
-### Required — record identity before DNS / LE
-
-Newer installer builds print a final **Instance identity** block (KSUID, shortuid, fqdn). Always capture into the worksheet:
-
-```bash
-sqlite3 /opt/pbx3/db/sqlite.db \
-  "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
-
-export KSUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT id FROM globals WHERE pkey='global';")
-export SHORTUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT shortuid FROM globals WHERE pkey='global';")
-export INSTANCE_FQDN=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT fqdn FROM globals WHERE pkey='global';")
-echo "KSUID=$KSUID SHORTUID=$SHORTUID INSTANCE_FQDN=$INSTANCE_FQDN"
-```
-
-Do **not** continue to DNS until `INSTANCE_FQDN` is non-empty. Catalog and S3 paths use the **KSUID**, not the shortuid.
-
-!!! warning "Do not yet"
-    Do **not** set `PBX3_ORG_BUCKET` by hand — onboard owns fleet `.env`.  
-    Do **not** run `reloader.sh` after a clean first install.
-
----
-
-## Step 4 — Install pbx3api and prove `/up`
-
-```bash
-# Prefer clone if the node can reach GitHub; else scp a Mac checkout to /opt/pbx3api
-sudo rm -rf /opt/pbx3api
-sudo git clone https://github.com/aelintra/pbx3api.git /opt/pbx3api
-cd /opt/pbx3api && sudo git checkout main && sudo git pull --ff-only
-
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo /opt/pbx3api/scripts/installer.sh
-
-curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
-# expect 200 — on the node use loopback only
-sudo systemctl is-active nginx php8.3-fpm asterisk
-```
-
-**Stop if not 200.** Onboard will not fix a broken API.
-
-!!! warning "AWS hairpin"
-    Do **not** `curl https://$INSTANCE_FQDN:44300/up` from the EC2 itself — it times out. Prove public HTTPS from the **ops Mac**. Open SG **TCP 44300** to your Mac `/32` (Gatekeeper `/32` alone is not enough for SPA). Details: [Install § Step 6](../installation/install-pbx3-pbx3api.md#step-6--prove-the-stack-before-dns).
-
-Also see [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md).
-
----
-
-## Step 5 — DNS and Let’s Encrypt
-
-| Name | Type | Value |
-|------|------|--------|
-| `globals.fqdn` (e.g. `abc12x.pbx3.com`) | **A** | EIP / `PUBLIC_IP` |
-
-Fleet nodes do **not** publish public tenant A records.
-
-```bash
-dig +short "$INSTANCE_FQDN"   # must equal PUBLIC_IP
-sudo /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
-# staging: sudo PBX3_LE_STAGING=1 /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
-```
-
-**From the ops Mac** (not the node):
-
-```bash
-curl -4 -sS --connect-timeout 5 --max-time 10 -o /dev/null -w "%{http_code}\n" "https://${INSTANCE_FQDN}:44300/up"
-# prefer 200 without -k
-```
-
-SPA path: [First Let's Encrypt certificate](../tls/first-letsencrypt.md) · **Certificates → Get certificate**.
-
-Confirm Admin SPA login with the email/password from Step 3.
-
----
-
-## Step 6 — Adopt into fleet (onboard)
-
-Run from the **ops Mac**, not as the node IAM role.
-
-### 6a — Fleet service token
-
-One shared secret for Gatekeeper ↔ every fleet node. Find it (do not invent a second value):
+One shared secret for Gatekeeper ↔ every fleet node. Do not invent a second value:
 
 ```bash
 # Prefer control / gatekeeper host
@@ -228,7 +111,7 @@ ssh -i "$KEY_FILE" ubuntu@08jzwn.pbx3.com \
 export PBX3_FLEET_SERVICE_TOKEN='paste-value-only'
 ```
 
-### 6b — Onboard script
+### 3b — Onboard script
 
 ```bash
 cd ~/GiT/pbx3-master/pbx3/pbx3-directory/tools
@@ -238,13 +121,13 @@ cd ~/GiT/pbx3-master/pbx3/pbx3-directory/tools
   --ssh-key "$KEY_FILE" \
   --region "$AWS_DEFAULT_REGION" \
   --org-bucket "$PBX3_ORG_BUCKET"
-# optional: --sbc-egress-host sbc.pbx3.com
-# dry-run: add --dry-run
 ```
 
-**What onboard does:** node IAM + instance profile → catalog register → fleet `.env` (bucket, mode, token, egress host) → seed **Egress** trunk → genAst / runLinker / Asterisk restart → S3 smoke.
+**What it does:** node IAM + instance profile → catalog register → fleet `.env` → seed **Egress** → genAst / runLinker / Asterisk restart → S3 smoke.
 
-### 6c — Sign-off on the node
+### 3c — Sign-off
+
+**On the node:**
 
 ```bash
 grep -E '^(PBX3_ORG_BUCKET|PBX3_FLEET_MODE|PBX3_FLEET_SERVICE_TOKEN)=' /opt/pbx3api/.env
@@ -253,60 +136,54 @@ curl -sS http://169.254.169.254/latest/meta-data/iam/security-credentials/
 cd /opt/pbx3api && sudo php artisan config:clear && sudo php artisan pbx3:fleet-preflight
 ```
 
-SPA Fleet → **Instances**: refresh — new shortuid / Name should appear.
-
-Script-only details: [Onboard a second instance](onboard-instance.md).
+Fleet SPA → **Instances** → refresh — new shortuid / Name should appear.
 
 ---
 
-## Step 7 — SBC edge (required before Fleet Create tenant)
+## Step 4 — SBC edge (required before Fleet Create tenant)
 
 Onboard makes the **node** able to dial toward the SBC. It does **not** register the home on the edge.
 
-### 7a — Provision edge (Fleet SPA)
+### 4a — Provision edge (Fleet SPA)
 
 Fleet → **Instances** → row menu → **Provision edge**.
 
 | Field | Value |
 |-------|--------|
-| Backend SIP URI | **`sip:{PUBLIC_IP}:5060`** — use the **EIP / public IP**, not the FQDN |
+| Backend SIP URI | **`sip:{PUBLIC_IP}:5060`** — EIP / public IP, **not** the FQDN |
 
-Click **Create edge**. Catalog should show a **Setid**. That allocates a dispatcher set + Asterisk Peer (Rule 13).
+Click **Create edge**. Catalog should show a **Setid**.
 
 !!! warning "FQDN backends"
-    The SBC rejects DNS-name backends for this path. Always **`sip:IP:5060`**.
+    The SBC rejects DNS-name backends here. Always **`sip:IP:5060`**.
 
-If Setid is blank after a rebuild but the edge already exists, use **Link setid** (catch-up only — does not create a new set).
+If Setid is blank after a rebuild but the edge already exists, use **Link setid** (catch-up only).
 
-### 7b — Fail2ban whitelist (manual until #5e)
+### 4b — Fail2ban whitelist (manual until #5e)
 
 SBC admin (lab: `https://sbc.pbx3.com/admin`) → **Fail2ban → Whitelist** → add this home’s public IP **`/32`**.
 
-Without this, OPTIONS / SIP from the home can get banned and break Egress qualify.
-
 ---
 
-## Step 8 — Optional: first tenant and smoke
+## Step 5 — Optional: first tenant and smoke
 
-1. Fleet → **Tenants** → **Create** on this home (setid must be set).  
-2. Allocate / assign DIDs as needed.  
-3. Desk or SIPp: inbound + outbound through the SBC.  
-4. Fleet → Catalog **Reconcile** clean if you changed domains.  
-5. Create a backup; confirm panel shows **local+S3** (or `pbx3:upload-backup`).
+1. Fleet → **Tenants** → **Create** on this home (setid required).  
+2. Allocate / assign DIDs.  
+3. Inbound + outbound through the SBC.  
+4. Catalog **Reconcile** if domains changed.  
+5. Backup → panel shows **local+S3**.
 
-Do **not** invent node-only tenants that are missing from the catalog.
+Do **not** invent node-only tenants missing from the catalog.
 
 ---
 
 ## Checklist
 
-- [ ] EC2 + EIP + SG; SSH works
-- [ ] `pbx3` + `pbx3cagi` installed; `installer.sh` created KSUID / opaque FQDN
-- [ ] pbx3api up; `GET /up` → **200**
-- [ ] DNS A + Let’s Encrypt; Admin SPA login works
+- [ ] EC2 + EIP + SG (44300 for ops + Gatekeeper)
+- [ ] [Install](../installation/install-pbx3-pbx3api.md) checklist complete (opaque FQDN, LE, SPA admin)
 - [ ] `onboard-fleet-instance.sh` (token + IAM + catalog + Egress)
 - [ ] `pbx3:fleet-preflight` green; instance in Fleet picker
-- [ ] **Provision edge** with `sip:{PUBLIC_IP}:5060`; Setid visible
+- [ ] **Provision edge** `sip:{PUBLIC_IP}:5060`; Setid visible
 - [ ] Fail2ban whitelist `/32` for home IP
 - [ ] (Optional) tenant / DID / call smoke + S3 backup
 
@@ -314,21 +191,16 @@ Do **not** invent node-only tenants that are missing from the catalog.
 
 | Symptom | Likely fix |
 |---------|------------|
-| `/up` not 200 | pbx3api installer, nginx default site, PHP-FPM |
-| Public FQDN curl hangs **on the node** | AWS hairpin — use `127.0.0.1` on box; public URL from Mac |
-| Mac curl `:44300` times out | SG: add ops public IP `/32` on 44300 (not only Gatekeeper) |
-| LE fails | DNS A wrong; SG/Shorewall port 80; real email (not `example.com`) |
+| Stack / `/up` / LE / hairpin / empty users | [Install failure cheat sheet](../installation/install-pbx3-pbx3api.md#failure-cheat-sheet) |
 | Onboard AWS error | Mac using `pbx3-node-*` role — switch to ops identity |
 | Preflight S3 red | IAM attach lag; empty `AWS_ACCESS_KEY_*` in `.env` |
-| Fleet Create: no setid | Step 7a Provision edge |
-| Fleet Create: service token | Step 6a — token must match Gatekeeper |
-| Egress Unavail / home banned | Step 7b Fail2ban whitelist |
-| Want **same** KSUID as a dead box | Wrong page → [Rebuild from S3](rebuild-from-s3.md) |
+| Fleet Create: no setid | Step 4a Provision edge |
+| Fleet Create: service token | Step 3a — token must match Gatekeeper |
+| Egress Unavail / home banned | Step 4b Fail2ban whitelist |
+| Want **same** KSUID as a dead box | [Rebuild from S3](rebuild-from-s3.md) |
 
 ## Related
 
-- [Onboard a second instance](onboard-instance.md) — adopt-only (healthy node already installed)  
-- [Decommission a fleet instance](decommission-instance.md) — reverse path  
-- [Rebuild from S3](rebuild-from-s3.md) — same KSUID recovery  
-- [Agent-assisted onboard / rebuild](agent-assisted.md) — human+AI Mode 4  
-- [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md) · [First Let's Encrypt](../tls/first-letsencrypt.md)
+- [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md) — stack procedure (Phase 2)  
+- [Onboard](onboard-instance.md) — adopt-only when Install is already done  
+- [Decommission](decommission-instance.md) · [Rebuild from S3](rebuild-from-s3.md) · [Agent-assisted](agent-assisted.md)

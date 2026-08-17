@@ -1,8 +1,8 @@
 # Onboard a second instance
 
-Join another **already installed** healthy node to the org bucket and catalog (Act 2 only).
+Join a node that **already finished** [Install](../installation/install-pbx3-pbx3api.md) to the org bucket and catalog (adopt only).
 
-For a **new** EC2 from scratch (install → DNS/LE → onboard → Provision edge), use **[Commission a fleet instance](commission-instance.md)** instead.
+For a **new** fleet home (EC2 → install → adopt → edge), use **[Commission a fleet instance](commission-instance.md)** — after Install, that is Commission **Step 3**.
 
 ## Before you start
 

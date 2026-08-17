@@ -33,8 +33,8 @@ Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destin
 
 | Task | Page |
 |------|------|
-| New home (EC2 → install → onboard → edge) | [Commission a fleet instance](commission-instance.md) |
-| Join a healthy node (adopt only) | [Onboard a second instance](onboard-instance.md) |
+| New home (EC2 → install → onboard → edge) | [Commission a fleet instance](commission-instance.md) (Install is linked as Phase 2) |
+| Join a healthy node (adopt only) | [Onboard](onboard-instance.md) or Commission Step 3 |
 | Retire a home (tenants → Decom → SBC → terminate) | [Decommission a fleet instance](decommission-instance.md) |
 | Same KSUID after EC2 loss | [Rebuild from S3](rebuild-from-s3.md) |
 | Wipe one site | [Tenant delete](tenant-delete.md) |

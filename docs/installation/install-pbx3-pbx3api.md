@@ -1,11 +1,17 @@
 # Install pbx3 and pbx3api
 
-Bring up a **clean Ubuntu 24.04** node from first principles: get packages → install → identity → API → DNS → TLS → prove `/up`.
+Bring up a **clean Ubuntu 24.04** node from first principles: get packages → install → identity → API → DNS → TLS → prove `/up` → SPA admin.
 
-This page stops at a working **solo** instance (Admin SPA login). To join an existing fleet (IAM, catalog, Egress, Provision edge), continue with [Commission a fleet instance](../fleet/commission-instance.md) from onboard onward, or [Onboard](../fleet/onboard-instance.md) if the node is already installed.
+This page is the **stack only** (solo or the install half of a fleet home). It does **not** run fleet onboard or Provision edge.
 
-!!! tip "Fleet greenfield end-to-end"
-    EC2 launch through SBC edge is one path: [Commission a fleet instance](../fleet/commission-instance.md). This page is the **stack install** story (solo or the install half of commission).
+| After this page | Continue at |
+|-----------------|-------------|
+| Stay solo | [Solo trial](../getting-started/solo-trial.md) |
+| **New fleet home** (you just finished Install) | [Commission a fleet instance](../fleet/commission-instance.md) → **Step 3 Adopt** |
+| Node already up; adopt only | [Onboard](../fleet/onboard-instance.md) |
+
+!!! tip "New EC2 into the fleet end-to-end"
+    Start at [Commission](../fleet/commission-instance.md) (EC2 → this Install page → onboard → edge). Do not duplicate stack steps from Commission — it links here for Phase 2.
 
 ## What you are installing
 
@@ -321,13 +327,19 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 | LE fails `example.com` contact | Use a real email — Let’s Encrypt rejects `*.example.com` |
 | `/up` not 200 on localhost | pbx3api installer, nginx default site, PHP-FPM |
 | SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` (see Step 4). Fixed in installer: must call bootstrap with **bash**, not `sh` |
+
 ## Next
+
+**Solo install complete.** If this box should join the fleet:
+
+→ **[Commission a fleet instance — Step 3 Adopt](../fleet/commission-instance.md#step-3--adopt-into-fleet-onboard)**  
+(`onboard-fleet-instance.sh` → Provision edge → Fail2ban)
 
 | Goal | Go to |
 |------|--------|
-| Use the box alone | [Solo trial](../getting-started/solo-trial.md) · [Admin guide](../admin/home-dashboard.md) |
-| Join an **existing** fleet | [Onboard a second instance](../fleet/onboard-instance.md) |
-| New fleet home including EC2 + edge | [Commission a fleet instance](../fleet/commission-instance.md) |
+| Stay solo | [Solo trial](../getting-started/solo-trial.md) · [Admin guide](../admin/home-dashboard.md) |
+| New fleet home (EC2 + install + adopt + edge) | [Commission](../fleet/commission-instance.md) from the top |
+| Adopt only (Install already done) | [Onboard](../fleet/onboard-instance.md) or Commission Step 3 |
 | Same KSUID after EC2 loss | [Rebuild from S3](../fleet/rebuild-from-s3.md) |
 
 ## Related
