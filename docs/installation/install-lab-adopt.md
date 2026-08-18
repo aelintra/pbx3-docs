@@ -22,7 +22,7 @@ sqlite3 /opt/pbx3/db/sqlite.db \
 
 ## In the SPA
 
-1. Open the SPA → **Fleet console** (not the instance admin password).
+1. Open the SPA from [Lab admin SPA (Vite)](install-lab-spa.md) → **Fleet console** (not the instance admin password).
 2. Sign in with the **fleet** email/password from the control installer.
 3. **Instances → Register instance**.
 4. Fill:

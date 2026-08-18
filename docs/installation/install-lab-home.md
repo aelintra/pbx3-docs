@@ -12,30 +12,23 @@ Control host first: [Install the Lab control host](install-lab-control.md).
 |:--------:|-------|
 | ☐ | Ubuntu **24.04** VM with sudo and SSH |
 | ☐ | This VM’s LAN IP (example lab: `192.168.1.31`) |
-| ☐ | From a PC that can clone GitHub: `pbx3_0.0.5-5_all.deb`, the **pbx3api** tree, and **`pbx3/scripts/install-home-host.sh`** |
+| ☐ | HTTPS to GitHub (public clones; no GitHub login) |
 | ☐ | A site **Name** + admin email/password you invent (**8+** characters; not a docs placeholder like `admin@example.com`) |
 
-**Skip CAGI** on ARM guests (and for this Lab install loop — no calls). Do **not** copy `pbx3cagi_*.deb`.
+**Skip CAGI** on ARM guests (and for this Lab install loop — no calls). Do not clone **pbx3cagi** here. On amd64, when you want AGI/SIP later: `git clone --depth 1 https://github.com/aelintra/pbx3cagi.git` and set `PBX3_INSTALL_CAGI=1`.
 
-## On your PC — copy files to the VM
+## On the home VM
 
-Put the installer, the `.deb`, and the API tree in one place on the VM (example: `/tmp/lab-home`):
-
-```bash
-scp pbx3/scripts/install-home-host.sh \
-    pbx3/pbx3_0.0.5-5_all.deb \
-    tech@192.168.1.31:/tmp/lab-home/
-scp -r pbx3api tech@192.168.1.31:/tmp/lab-home/pbx3api
-```
-
-Use your VM user and LAN IP. Create `/tmp/lab-home` on the VM first if needed (`mkdir -p /tmp/lab-home`).
-
-## On the home VM — one installer
+Paste this (public **pbx3** + **pbx3api**; run the installer from the pbx3 tree so the `.deb` on `main` is found):
 
 ```bash
-cd /tmp/lab-home
-chmod +x install-home-host.sh
-sudo ./install-home-host.sh
+sudo apt-get update
+sudo apt-get install -y git
+cd ~
+git clone --depth 1 https://github.com/aelintra/pbx3.git
+git clone --depth 1 https://github.com/aelintra/pbx3api.git pbx3/pbx3api
+cd pbx3
+sudo ./scripts/install-home-host.sh
 ```
 
 Answer:
@@ -68,10 +61,9 @@ curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 # expect 200
 ```
 
-From your PC, run the SPA (`npm run dev`) and sign in with the admin email/password. API base for Vite proxy: `http://localhost:5173/api` after pointing `VITE_API_PROXY_TARGET` at this VM.
-
 ## Next
 
-[Adopt this home into Fleet](install-lab-adopt.md) (SPA **Manage instance** → pick the row, or **Fleet console** → **Instances → Register instance**). Ops Mac onboard is **not** the Lab happy path.
+1. [Install the Lab admin SPA (Vite)](install-lab-spa.md) on your PC (`npm run dev` → http://localhost:5173).
+2. [Adopt this home into Fleet](install-lab-adopt.md). Ops Mac onboard is **not** the Lab happy path.
 
 OpenSIPS / calls are **not** part of this page.
