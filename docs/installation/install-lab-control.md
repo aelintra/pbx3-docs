@@ -12,7 +12,7 @@ Solo PBX (one box, no fleet) stays on [Install pbx3 and pbx3api](install-pbx3-pb
 |:--------:|-------|
 | ☐ | Ubuntu **24.04** VM with sudo and SSH |
 | ☐ | This VM’s LAN IP (example lab: `192.168.1.33`) |
-| ☐ | HTTPS to GitHub (public clones; no GitHub login). Control installer is `pbx3-directory/` in **pbx3** |
+| ☐ | HTTPS to GitHub. Control installer is `pbx3-directory/` in **pbx3** (public clone when that repo is public; otherwise copy the tree) |
 | ☐ | A fleet admin email + password you invent (**10+** characters) |
 
 You will **not** need AWS, Garage keys, or a Mac.
@@ -29,6 +29,8 @@ git clone --depth 1 https://github.com/aelintra/pbx3.git
 cd pbx3/pbx3-directory
 sudo ./tools/install-control-host.sh
 ```
+
+If clone asks for a GitHub login, **pbx3** is still private. Copy the tree from a machine that already has it so this VM has `~/pbx3/pbx3-directory`, then run the installer from there.
 
 Answer:
 
@@ -56,5 +58,6 @@ Re-run is safe with the same answers (it will not rotate tokens).
 1. Home VM: [Install the Lab home PBX](install-lab-home.md).
 2. Your PC: [Install the Lab admin SPA (Vite)](install-lab-spa.md).
 3. [Adopt the home](install-lab-adopt.md) from Fleet (**Instances → Register instance**).
+4. Optional SIP: [Install the Lab SBC](install-lab-sbc.md) on an **amd64** VM.
 
 OpenSIPS / calls are **not** part of this page.

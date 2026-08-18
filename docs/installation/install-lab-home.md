@@ -12,10 +12,24 @@ Control host first: [Install the Lab control host](install-lab-control.md).
 |:--------:|-------|
 | ☐ | Ubuntu **24.04** VM with sudo and SSH |
 | ☐ | This VM’s LAN IP (example lab: `192.168.1.31`) |
-| ☐ | HTTPS to GitHub (public clones; no GitHub login) |
+| ☐ | HTTPS to GitHub (**pbx3api** is public; **pbx3** copy the tree if clone asks for login) |
 | ☐ | A site **Name** + admin email/password you invent (**8+** characters; not a docs placeholder like `admin@example.com`) |
 
-**Skip CAGI** on ARM guests (and for this Lab install loop — no calls). Do not clone **pbx3cagi** here. On amd64, when you want AGI/SIP later: `git clone --depth 1 https://github.com/aelintra/pbx3cagi.git` and set `PBX3_INSTALL_CAGI=1`.
+**Installer loop:** skip CAGI (`PBX3_INSTALL_CAGI` unset). **pbx3cagi** is still private — do not expect an on-box clone during home install.
+
+**When you want AGI on an ARM home:** compile on the guest (do not copy a Mac binary). Rsync the `pbx3cagi` tree, then:
+
+```bash
+sudo apt-get install -y make libbsd-dev
+cd ~/pbx3cagi/pbx3cagi-1.0.0/csource
+make clean && make
+sudo cp -a pbx3cagi /usr/share/asterisk/agi-bin/pbx3cagi.arm64
+sudo chmod 755 /usr/share/asterisk/agi-bin/pbx3cagi.arm64
+sudo ln -sfn pbx3cagi.arm64 /usr/share/asterisk/agi-bin/pbx3cagi
+file /usr/share/asterisk/agi-bin/pbx3cagi.arm64   # ELF aarch64
+```
+
+On amd64, the installer path is: clone **pbx3cagi** and set `PBX3_INSTALL_CAGI=1` (or `apt install` the `_all.deb`).
 
 ## On the home VM
 
@@ -30,6 +44,8 @@ git clone --depth 1 https://github.com/aelintra/pbx3api.git pbx3/pbx3api
 cd pbx3
 sudo ./scripts/install-home-host.sh
 ```
+
+**pbx3api** is public. If the **pbx3** clone asks for a GitHub login, copy `pbx3/` (including `scripts/install-home-host.sh` and the `pbx3_*.deb` on `main`) from a machine that already has it, clone **pbx3api** into `pbx3/pbx3api`, then run the installer.
 
 Answer:
 

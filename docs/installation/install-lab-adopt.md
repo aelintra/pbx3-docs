@@ -43,4 +43,4 @@ sqlite3 /opt/pbx3/db/sqlite.db \
 
 Log out. On the instance login screen, **Manage instance** → pick **Lab Home** (use **Refresh catalog** on that picker if the row is missing) → sign in with the **home** admin email/password (not the fleet user).
 
-Leave Let’s Encrypt and Provision edge for later (cloud / SIP).
+Leave Let’s Encrypt for later (cloud). For SIP on the LAN, [install the Lab SBC](install-lab-sbc.md) then **Provision edge**.

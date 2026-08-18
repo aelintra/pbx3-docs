@@ -59,6 +59,7 @@ nav:
       - Lab home PBX: installation/install-lab-home.md
       - Lab admin SPA (Vite): installation/install-lab-spa.md
       - Lab adopt home: installation/install-lab-adopt.md
+      - Lab SBC (SIP edge): installation/install-lab-sbc.md
       - First-run installer: installation/first-run.md
       - Upgrade a package: installation/upgrade.md
       - Restore from backup: installation/restore-from-backup.md
