@@ -1,10 +1,14 @@
-# Install the Lab control host
+# Install the Lab control VM
 
-**Audience:** a Windows-shop tech who can create Ubuntu VMs and paste a few commands. One installer on this box, then a browser.
+**Audience:** a MS or MacOS tech who can create Ubuntu VMs and paste a few commands. 
 
-This is **VM A** in Lab deployment: Gatekeeper + Garage (org catalog). It does **not** install the home PBX (that is the other VM) and it does **not** require SIP.
+## What we will install in this section. 
 
-Solo PBX (one box, no fleet) stays on [Install pbx3 and pbx3api](install-pbx3-pbx3api.md) — no control host, no Garage.
+The Gatekeeper and object store for the PBX Fleet.  In this exercise we will use the 'Garage' S3 emulator as the store.  
+
+This is **VM A** in Lab deployment: Gatekeeper + Garage (org catalog). It does **not** install the home PBX or the SBC. The Lab walk’s goal is two phones and a call — next page is the SBC, then the home PBX.
+
+If you just want to build a solo PBX (one box, no fleet) go to [Install pbx3 and pbx3api](install-pbx3-pbx3api.md) — no control host, no Garage.
 
 ## What you need
 
@@ -15,14 +19,17 @@ Solo PBX (one box, no fleet) stays on [Install pbx3 and pbx3api](install-pbx3-pb
 | ☐ | HTTPS to GitHub. Control installer is `pbx3-directory/` in **pbx3** (public clone when that repo is public; otherwise copy the tree) |
 | ☐ | A fleet admin email + password you invent (**10+** characters) |
 
-You will **not** need AWS, Garage keys, or a Mac.
+To begin, bring up a fresh, server-only Ubuntu 24.04 using your hypervisor of choice (Proxmox, Parallels, whatever you have). Make sure it is connected to the same subnet as your laptop/PC to avoid having to route to it. 
+
+You will **not** need AWS or Garage keys.   
 
 ## On the control VM
+
 
 Paste this (creates `~/pbx3/pbx3-directory` and runs the installer):
 
 ```bash
-sudo apt-get update
+sudo apt-get update && sudo apt upgrade
 sudo apt-get install -y git
 cd ~
 git clone --depth 1 https://github.com/aelintra/pbx3.git
@@ -40,7 +47,7 @@ Answer:
 | This VM LAN IP | `192.168.1.33` (installer usually detects it) |
 | Fleet admin email | your address |
 | Fleet admin password | 10+ characters |
-| SBC admin API URL | `http://192.168.1.85/api` when SIP lab has an SBC — Enter if not yet |
+| SBC admin API URL | `http://192.168.1.85/api` (use the reserved SBC LAN IP even if that VM is not installed yet) |
 
 When it finishes, open in a browser:
 
@@ -49,15 +56,14 @@ When it finishes, open in a browser:
 
 The installer also enables **`pbx3-fleet-probe.timer`** (home `/up` every minute so Fleet stays **Healthy** after adopt). Keys stay on the box. The finish banner prints **`PBX3_FLEET_SERVICE_TOKEN`** and org bucket for the home / SBC installers.
 
-SPA **Fleet** mode talks to `http://192.168.1.33` with the email/password you set.
+Make a note of the values you typed, the PBX3_FLEET_SERVICE_TOKEN and the org bucket.   You'll need them later.
+
+The SPA **Fleet** mode sub-app will talk to `http://192.168.1.33` (your control VM address if different) with the email/password you set.
 
 Re-run is safe with the same answers (it will not rotate tokens).
 
+That's it for this VM for now.
+
 ## Next
 
-1. Home VM: [Install the Lab home PBX](install-lab-home.md).
-2. Your PC: [Install the Lab admin SPA (Vite)](install-lab-spa.md).
-3. [Adopt the home](install-lab-adopt.md) from Fleet (**Instances → Register instance**).
-4. Optional SIP: [Install the Lab SBC](install-lab-sbc.md) on an **amd64** VM.
-
-OpenSIPS / calls are **not** part of this page.
+[Install the Lab SBC](install-lab-sbc.md) on an **amd64** VM (then the home PBX).

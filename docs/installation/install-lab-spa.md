@@ -1,8 +1,13 @@
 # Install the Lab admin SPA (Vite)
 
-**Audience:** the same Windows-shop tech. This runs on **your PC**, not on a VM. The home API is already up ([Lab home PBX](install-lab-home.md) `/up` → 200).
+**Audience:** a MS or MacOS tech who can create Ubuntu VMs and paste a few commands.  This runs on **your PC**, not on a VM. The home API is already up ([Lab home PBX](install-lab-home.md) `/up` → 200).
 
-Until a published GitHub Pages bundle exists, Lab uses the **Vite dev server** so the browser stays on `http://localhost:5173` (snakeoil on `:44300` never hits the browser). Restart `npm run dev` after any `.env.development` change.
+## What we will install in this section.
+
+PBX3 Fleet management and admin uses a Single Page App (SPA).  It runs under npm (Node.js) on **your PC**, not on a VM. The Fleet API is already up if you have completed the previous sections in this install sequence.
+
+Until a published GitHub Pages bundle exists, Lab uses the **Vite dev server** so the browser URL stays on `http://localhost:5173`. Usually, you will run npm in your VSC or Cursor IDE. You can find specific Node.js install instructions for your setup online.
+
 
 ## What you need
 
@@ -10,7 +15,7 @@ Until a published GitHub Pages bundle exists, Lab uses the **Vite dev server** s
 |:--------:|-------|
 | ☐ | **Node.js LTS** (includes **npm**) — [nodejs.org](https://nodejs.org/) if `node -v` fails. Vite wants Node **18+** (20 LTS is fine). |
 | ☐ | Git + HTTPS to GitHub (public **pbx3spa**) |
-| ☐ | Home LAN IP (example `192.168.1.31`) and control LAN IP (example `192.168.1.33`) |
+| ☐ | Home LAN IP (PBX example `192.168.1.31`) and control LAN IP (example `192.168.1.33`) |
 
 ## Clone and env
 
@@ -19,7 +24,7 @@ git clone --depth 1 https://github.com/aelintra/pbx3spa.git
 cd pbx3spa
 ```
 
-Create **`.env.development`** in that folder (this file is not in git). Edit the two IPs if yours differ:
+Create **`.env.development`** in that folder (this file is not in git). Edit the two IPs if yours differ:  In our example .31 is the PBX instance you created and .33 is the Gatekeeper/Garage instance.
 
 ```env
 VITE_API_PROXY_TARGET=https://192.168.1.31:44300
@@ -59,6 +64,8 @@ Do **not** open `https://192.168.1.31:44300` in the browser (snakeoil). Always u
 **Fleet console** (catalog, Register instance): [control installer](install-lab-control.md) fleet email/password. Then [adopt the home](install-lab-adopt.md).
 
 Modes use different passwords. Do not mix them.
+
+That's it for this section.  You're almost there...
 
 ## Next
 

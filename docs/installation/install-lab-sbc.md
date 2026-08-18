@@ -1,8 +1,12 @@
 # Install the Lab SBC (SIP edge)
 
-**Audience:** same Windows-shop tech. This is **VM C** — OpenSIPS + Filament admin on **amd64**. Control (`.33`) and home (`.31`) are already up ([adopt](install-lab-adopt.md) first).
+**Audience:** a MS or MacOS tech who can create Ubuntu VMs and paste a few commands.
 
-OpenSIPS packages are **x86_64 only**. Do not install this on the ARM control or home VMs.
+## What we will install in this section.
+
+This is **VM C**, the SBC Edge router — OpenSIPS + Filament admin on **amd64**. Control (`.33`) is already up. The home PBX comes **after** this page so the home installer can set Egress in one pass.
+
+The PBX3 SBC edge router uses OpenSIPS.  OpenSIPS packages are **x86_64 only**. Do not use this section on ARM VMs.  If you have no option then you will need to install OpenSIPS from source and compile it.   You can find full instructions on the opensips website.
 
 ## What you need
 
@@ -11,7 +15,7 @@ OpenSIPS packages are **x86_64 only**. Do not install this on the ARM control or
 | ☐ | Ubuntu **24.04 amd64** VM with sudo and SSH (example lab: `192.168.1.85`) |
 | ☐ | HTTPS to GitHub (public **pbx3sbc** + **pbx3sbc-admin**) |
 | ☐ | A Filament admin email + password you invent (**10+** characters) |
-| ☐ | Fleet service token from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — needed for **Provision edge** |
+| ☐ | Fleet service token from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — pass it to the Filament installer. **Provision edge** is later, after you adopt the home. |
 
 No Let’s Encrypt on this Lab path (HTTP on the LAN IP).
 
@@ -53,29 +57,19 @@ sudo ./install.sh \
 
 Open **http://192.168.1.85/admin** (login with the Filament email/password). Do not use snakeoil HTTPS.
 
-If you skipped the fleet token, set `PBX3_FLEET_SERVICE_TOKEN` in `~/pbx3sbc-admin/.env` before Provision edge.
+If you skipped the fleet token, set `PBX3_FLEET_SERVICE_TOKEN` in `~/pbx3sbc-admin/.env` before you **Provision edge** (after adopt).
 
 ## 3. Control already knows this IP
 
-The [control installer](install-lab-control.md) prompt **SBC admin API URL** should be `http://192.168.1.85/api`. If you pressed Enter earlier, re-run on the control VM (tokens are not rotated):
+The [control installer](install-lab-control.md) prompt **SBC admin API URL** should already be `http://192.168.1.85/api`. If you pressed Enter earlier, re-run on the control VM (tokens are not rotated):
 
 ```bash
 cd ~/pbx3/pbx3-directory
 sudo PBX3_SBC_ADMIN_API_URL=http://192.168.1.85/api ./tools/install-control-host.sh
 ```
 
-## 4. Provision edge + Egress
+That's it for this VM for now. Do **not** Provision edge yet — there is no home in the catalog.
 
-In the SPA **Fleet console** → the Lab Home row → **Provision edge** (setid assigned; home IP is Fail2ban-whitelisted).
+## Next
 
-Then on the **home** VM, seed the Egress trunk if you skipped it at home install:
-
-```bash
-sudo PBX3_SBC_EGRESS_HOST=192.168.1.85 \
-  ~/pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh /opt/pbx3/db/sqlite.db
-sudo /opt/pbx3/scripts/genAst.sh
-```
-
-If `pbx3-directory` is not on the home VM, copy that tools file from the control tree (or the laptop checkout) and run the same two commands. Do not re-run `install-home-host.sh` just to seed Egress.
-
-Desk phones are **not** this page. ARM home CAGI is compile-on-guest — see [Install the Lab home PBX](install-lab-home.md).
+[Install the Lab home PBX](install-lab-home.md). Use this SBC LAN IP as the home **SBC egress host**.

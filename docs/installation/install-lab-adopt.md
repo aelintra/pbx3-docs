@@ -1,8 +1,12 @@
 # Adopt a Lab home into Fleet
 
-**Audience:** same Windows-shop tech. Control host and home PBX are already installed. This puts the home in the catalog so the SPA picker has a row.
+**Audience:** a MS or MacOS tech who can create Ubuntu VMs and paste a few commands. Control, SBC, and home PBX are already installed. This puts the home in the catalog, **Provision edge**, then you can add two extensions and make a call.
 
-Do **not** run Mac `onboard-fleet-instance.sh`. Do **not** Provision edge (no SIP in this Lab loop).
+## What we will do in this section.
+
+Register the home in Fleet, Provision edge (dispatcher setid + Fail2ban whitelist), then create two extensions and point the phones at the **SBC** LAN IP.
+
+Do **not** run Mac `onboard-fleet-instance.sh`.
 
 ## What you need
 
@@ -10,13 +14,14 @@ Do **not** run Mac `onboard-fleet-instance.sh`. Do **not** Provision edge (no SI
 |:--------:|-------|
 | ☐ | [Control host](install-lab-control.md) health 200 |
 | ☐ | [Home PBX](install-lab-home.md) `/up` 200 |
+| ☐ | [Lab SBC](install-lab-sbc.md) Filament login works |
 | ☐ | Fleet admin email/password from the control installer |
 | ☐ | Home KSUID / FQDN from the home VM (below) |
 
 On the **home** VM:
 
 ```bash
-sqlite3 /opt/pbx3/db/sqlite.db \
+sudo sqlite3 /opt/pbx3/db/sqlite.db \
   "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
 ```
 
@@ -43,4 +48,16 @@ sqlite3 /opt/pbx3/db/sqlite.db \
 
 Log out. On the instance login screen, **Manage instance** → pick **Lab Home** (use **Refresh catalog** on that picker if the row is missing) → sign in with the **home** admin email/password (not the fleet user).
 
-Leave Let’s Encrypt for later (cloud). For SIP on the LAN, [install the Lab SBC](install-lab-sbc.md) then **Provision edge**.
+Leave Let’s Encrypt for later (cloud).
+
+## Provision edge
+
+Back in the SPA **Fleet console** (fleet email/password) → the Lab Home row → **Provision edge**. That assigns a dispatcher setid and whitelists the home IP on the SBC.
+
+## Two phones and a call
+
+1. Instance admin → a tenant → two extensions (example **101** / **102**). Commit.
+2. Point both phones at the **SBC** LAN IP (example `192.168.1.85`), not the home `.31`.
+3. Place a call 101 ↔ 102. CAGI must already be on the home ([ARM compile](install-lab-home.md#cagi-needed-for-a-call)).
+
+That's the Lab walk.
