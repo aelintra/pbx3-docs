@@ -46,8 +46,18 @@ Answer:
 | Site name | `Lab Home` |
 | Admin SPA email | your address |
 | Admin SPA password | 8+ characters |
+| Fleet service token | from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — Enter to skip |
+| Org bucket | `lab-pbx3` (when token set) |
+| SBC egress host | SBC LAN IP when doing SIP (Enter to skip until after Provision edge) |
 
-The installer installs the `.deb`, runs the pbx3 first-run script, copies pbx3api to `/opt/pbx3api`, and runs the API installer (snakeoil on **:44300**). It does **not** run Let’s Encrypt. Re-run is safe if pbx3 is already installed.
+The installer writes fleet API settings to `/opt/pbx3api/.env` when a token is provided (`PBX3_FLEET_MODE`, org bucket, optional egress host). If you set the SBC egress host, it also seeds the **Egress** trunk and restarts Asterisk (needs `pbx3-directory/tools/seed-fleet-egress-trunk.sh` on the VM or in the monorepo checkout).
+
+Non-interactive example:
+
+```bash
+sudo PBX3_FLEET_SERVICE_TOKEN='…' PBX3_ORG_BUCKET=lab-pbx3 \
+     PBX3_SBC_EGRESS_HOST=192.168.1.85 ./install-home-host.sh
+```
 
 ## Prove it
 

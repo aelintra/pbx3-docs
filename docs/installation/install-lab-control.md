@@ -32,13 +32,14 @@ Answer:
 | This VM LAN IP | `192.168.1.33` (installer usually detects it) |
 | Fleet admin email | your address |
 | Fleet admin password | 10+ characters |
+| SBC admin API URL | `http://192.168.1.85/api` when SIP lab has an SBC — Enter if not yet |
 
 When it finishes, open in a browser:
 
 - Health: `http://192.168.1.33/health` → `{"status":"ok"}`
 - Catalog: `http://192.168.1.33/catalog/instance-index.json` → `"instances": []` until you adopt a home
 
-The installer also enables **`pbx3-fleet-probe.timer`** (home `/up` every minute so Fleet stays **Healthy** after adopt). Keys stay on the box.
+The installer also enables **`pbx3-fleet-probe.timer`** (home `/up` every minute so Fleet stays **Healthy** after adopt). Keys stay on the box. The finish banner prints **`PBX3_FLEET_SERVICE_TOKEN`** and org bucket for the home / SBC installers.
 
 SPA **Fleet** mode talks to `http://192.168.1.33` with the email/password you set.
 
