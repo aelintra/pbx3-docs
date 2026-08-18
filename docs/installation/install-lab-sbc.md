@@ -72,15 +72,10 @@ Then on the **home** VM, seed the Egress trunk if you skipped it at home install
 
 ```bash
 sudo PBX3_SBC_EGRESS_HOST=192.168.1.85 \
-  /path/to/pbx3/scripts/install-home-host.sh
-```
-
-Or only the seed (if the wrapper is already installed):
-
-```bash
-sudo PBX3_SBC_EGRESS_HOST=192.168.1.85 \
   ~/pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh /opt/pbx3/db/sqlite.db
 sudo /opt/pbx3/scripts/genAst.sh
 ```
+
+If `pbx3-directory` is not on the home VM, copy that tools file from the control tree (or the laptop checkout) and run the same two commands. Do not re-run `install-home-host.sh` just to seed Egress.
 
 Desk phones are **not** this page. ARM home CAGI is compile-on-guest — see [Install the Lab home PBX](install-lab-home.md).
