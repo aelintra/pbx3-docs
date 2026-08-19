@@ -58,8 +58,11 @@ Back in the SPA **Fleet console** (fleet email/password) → the Lab Home row �
 
 ## Two phones and a call
 
-1. Instance admin → a tenant → two extensions (example **101** / **102**). Commit.
+1. Instance admin → a tenant → two extensions (example **101** / **102**). **Save**, then **Commit** (extensions are not in Asterisk until Commit).
 2. Point both phones at the **SBC** LAN IP (example `192.168.1.85`), not the home `.31`.
+
+**Order matters on fleet:** **Commit before** aiming phones at the SBC. If a phone registers earlier (e.g. reused lab handset still on **`.85`** from a prior tenant), Asterisk may log `AOR '' not found for endpoint 'Egress'` until Commit and correct auth — benign; see **`FLEET_COMMIT_RELOAD_REQUIREMENTS.md`** **#5j-a**.
+
 3. Place a call 101 ↔ 102. CAGI must already be on the home ([ARM compile](install-lab-home.md#cagi-needed-for-a-call)).
 
 That's the Lab walk.
