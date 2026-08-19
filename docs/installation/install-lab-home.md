@@ -43,7 +43,7 @@ Answer:
 
 | Prompt | Example |
 |--------|---------|
-| Domain apex | `pbx3.com` (FQDN becomes `{shortuid}.pbx3.com` — no DNS required for Lab) |
+| Domain apex | **Press Enter** (default `pbx3.com`). Type nothing. You are **not** asked for an instance FQDN — it is minted as `{shortuid}.pbx3.com`. |
 | Site name | `Lab Home` |
 | Admin SPA email | your address |
 | Admin SPA password | 8+ characters |
@@ -71,10 +71,16 @@ curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 
 ## CAGI (needed for a call)
 
-On **ARM**, rsync the `pbx3cagi` tree from a machine that has it, then:
+**pbx3cagi** is still private — there is nothing to `cd` into until you copy the tree. From the **Mac** (adjust the local path if yours differs):
 
 ```bash
-sudo apt-get install -y make libbsd-dev
+rsync -az --exclude .git ~/GiT/pbx3-master/pbx3cagi/ tech@192.168.1.31:~/pbx3cagi/
+```
+
+Then on the **home VM**:
+
+```bash
+sudo apt-get install -y build-essential libbsd-dev
 cd ~/pbx3cagi/pbx3cagi-1.0.0/csource
 make clean && make
 sudo cp -a pbx3cagi /usr/share/asterisk/agi-bin/pbx3cagi.arm64

@@ -43,7 +43,7 @@ Check: `systemctl is-active opensips mariadb` → both `active`.
 1. The OpenSIPS **database password** you invented in step 1 (typed twice)
 2. A **Filament admin email** (a real address, not a docs hint)
 3. A **Filament admin password** (10+ characters, typed twice)
-4. The **fleet service token** from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`)
+4. The **fleet service token** from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — paste that exact value. Do not invent a second token. **Provision edge** fails with `401 Unauthorized` if Filament’s token does not match control (and the home).
 
 If `~/pbx3sbc-admin` already exists, skip `git clone` and only `cd ~/pbx3sbc-admin`.
 
