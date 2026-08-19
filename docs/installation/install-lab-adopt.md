@@ -2,6 +2,8 @@
 
 **Audience:** a MS or MacOS tech who can create Ubuntu VMs and paste a few commands. Control, SBC, and home PBX are already installed. This puts the home in the catalog, **Provision edge**, then you can add two extensions and make a call.
 
+Sections **F** and **G** of the **[operator worksheet](install-lab-worksheet.md)** match this page.
+
 ## What we will do in this section.
 
 Register the home in Fleet, Provision edge (dispatcher setid + Fail2ban whitelist), then create two extensions and point the phones at the **SBC** LAN IP.

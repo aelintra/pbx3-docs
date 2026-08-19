@@ -55,6 +55,7 @@ nav:
   - Installation:
       - Requirements: installation/requirements.md
       - Install pbx3 and pbx3api: installation/install-pbx3-pbx3api.md
+      - Lab install worksheet: installation/install-lab-worksheet.md
       - Lab control host: installation/install-lab-control.md
       - Lab SBC (SIP edge): installation/install-lab-sbc.md
       - Lab home PBX: installation/install-lab-home.md

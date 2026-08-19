@@ -15,7 +15,7 @@ The PBX3 SBC edge router uses OpenSIPS.  OpenSIPS packages are **x86_64 only**. 
 | ☐ | Ubuntu **24.04 amd64** VM with sudo and SSH (example lab: `192.168.1.85`) |
 | ☐ | HTTPS to GitHub (public **pbx3sbc** + **pbx3sbc-admin**) |
 | ☐ | A Filament admin email + password you invent (**10+** characters) — the installer will ask; do not put them in the paste |
-| ☐ | Fleet service token from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — the installer will ask. **Provision edge** is later, after you adopt the home. |
+| ☐ | **Fleet service token** from control — copy once from the [control installer](install-lab-control.md) finish banner (`grep` on `/etc/pbx3-gatekeeper/.env`). **Reuse the same value** on the home install. **Provision edge** is later, after you adopt the home. |
 
 No Let’s Encrypt on this Lab path (HTTP on the LAN IP).
 
@@ -38,16 +38,24 @@ Check: `systemctl is-active opensips mariadb` → both `active`.
 
 ## 2. Admin (Filament)
 
-**Stop — do not paste passwords or tokens.** The block below is safe to copy as-is. The installer will **ask** for:
+**Stop — do not paste passwords or the fleet token in docs.** The block below is safe to copy as-is. The installer will **ask** for:
 
 1. The OpenSIPS **database password** you invented in step 1 (typed twice)
 2. A **Filament admin email** (a real address, not a docs hint)
 3. A **Filament admin password** (10+ characters, typed twice)
-4. The **fleet service token** from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — paste that exact value. Do not invent a second token. **Provision edge** fails with `401 Unauthorized` if Filament’s token does not match control (and the home).
+4. The **fleet service token** from control — paste that **exact** value (same as cloud commission). Do not invent a second token. **Provision edge** fails with `401 Unauthorized` if this does not match control (and the home).
 
-If you still see `401 Unauthorized` after verifying the token string matches control exactly, treat this as an operator drift / wrong-source copy problem and re-check what value ended up in `~/pbx3sbc-admin/.env`.
+Non-interactive (same as cloud — export once on your ops machine):
 
-Possible engineering revisit (#5g): modify the Provision edge / adopt flow so `pbx3sbc-admin` (or the home) can **pull the token from Gatekeeper/control automatically**, removing the long token re-type prompt entirely.
+```bash
+export PBX3_FLEET_SERVICE_TOKEN='paste-from-control-grep'
+sudo ./install.sh \
+  --server-name 192.168.1.85 \
+  --fleet-service-token "$PBX3_FLEET_SERVICE_TOKEN" \
+  --db-host localhost --db-name opensips --db-user opensips \
+  --opensips-mi-url http://127.0.0.1:8888/mi \
+  --admin-name Admin
+```
 
 If `~/pbx3sbc-admin` already exists, skip `git clone` and only `cd ~/pbx3sbc-admin`.
 
@@ -66,7 +74,7 @@ sudo ./install.sh \
 
 Open **http://192.168.1.85/admin** (login with the Filament email/password you typed). Do not use snakeoil HTTPS.
 
-If you skipped the fleet token at the prompt, set `PBX3_FLEET_SERVICE_TOKEN` in `~/pbx3sbc-admin/.env` before you **Provision edge** (after adopt).
+Standalone SBC (no fleet): pass **`--skip-fleet-token`**.
 
 ## 3. Control already knows this IP
 
@@ -81,4 +89,4 @@ That's it for this VM for now. Do **not** Provision edge yet — there is no hom
 
 ## Next
 
-[Install the Lab home PBX](install-lab-home.md). Use this SBC LAN IP as the home **SBC egress host**.
+[Install the Lab home PBX](install-lab-home.md). Use this SBC LAN IP as the home **SBC egress host**. Paste the **same** fleet token again (or reuse `PBX3_FLEET_SERVICE_TOKEN` from your export).

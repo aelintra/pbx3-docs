@@ -59,6 +59,8 @@ Fleet → **Instances** → row menu → **Decom**.
 - Does **not** stop Asterisk, terminate EC2, or delete S3 backups.
 - Ability: same fleet manage path as other instance lifecycle actions.
 
+After EC2 is gone (or catalog row no longer needed), **Remove** on a **decommissioned** row drops the catalog entry. S3 `instances/{KSUID}/meta.json` and backups are kept.
+
 **CLI equivalent** (Mac / ops):
 
 ```bash
@@ -66,6 +68,7 @@ cd pbx3/pbx3-directory/tools
 export PBX3_ORG_BUCKET=08jzwn-pbx3   # your org bucket
 ./unregister-instance.sh --id {KSUID} --notes 'Replacing node'
 # Drop the catalog row entirely (meta kept under instances/{id}/):
+# Fleet → Instances → Remove (decommissioned row), or:
 # ./unregister-instance.sh --id {KSUID} --remove --notes 'EC2 terminated'
 ```
 
@@ -135,6 +138,7 @@ Then Fleet Create / move tenants back, re-allocate DIDs, smoke in/out calls, Fle
 - [ ] Tenants moved or Delete jobs `completed`
 - [ ] DIDs released (if not keeping ownership)
 - [ ] Instance **Decom** (or `unregister-instance.sh`)
+- [ ] Instance **Remove** from catalog when retired (decommissioned row, or `unregister-instance.sh --remove`)
 - [ ] SBC Peer removed
 - [ ] Fail2ban whitelist IP removed
 - [ ] DNS instance A removed/parked

@@ -47,7 +47,7 @@ Answer:
 | Site name | `Lab Home` |
 | Admin SPA email | your address |
 | Admin SPA password | 8+ characters |
-| Fleet service token | from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) |
+| Fleet service token | same value as control / SBC (`PBX3_FLEET_SERVICE_TOKEN` from control `grep`) |
 | Org bucket | `lab-pbx3` |
 | SBC egress host | SBC LAN IP (example `192.168.1.85`) — **do not skip** on a fleet lab home |
 
@@ -59,10 +59,11 @@ The seeder is shipped at:
 2. `/opt/pbx3/scripts/seed-fleet-egress-trunk.sh` — from the **pbx3** deb
 3. `pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh` — full monorepo checkout
 
-Non-interactive example (recommended for repeatable lab builds):
+Non-interactive example (recommended — same as cloud; export token once):
 
 ```bash
-sudo PBX3_FLEET_SERVICE_TOKEN='…' PBX3_ORG_BUCKET=lab-pbx3 \
+export PBX3_FLEET_SERVICE_TOKEN='paste-from-control-grep'
+sudo PBX3_FLEET_SERVICE_TOKEN="$PBX3_FLEET_SERVICE_TOKEN" PBX3_ORG_BUCKET=lab-pbx3 \
      PBX3_SBC_EGRESS_HOST=192.168.1.85 ./scripts/install-home-host.sh
 ```
 
