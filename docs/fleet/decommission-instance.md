@@ -40,6 +40,8 @@ For **each** active tenant on this instance:
 
 Do **not** terminate EC2 while active tenants still home here.
 
+Fleet → **Instances** → **Decom** is **blocked** (Gatekeeper **422**) until every active tenant on this home is moved or deleted. Soft-decommissioned tenant meta pointing at the instance is audit residue only.
+
 ### DIDs (if deleting tenants)
 
 1. Fleet → **DIDs** → **Release** each number on that tenant.  
