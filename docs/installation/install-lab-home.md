@@ -51,22 +51,33 @@ Answer:
 | Org bucket | `lab-pbx3` |
 | SBC egress host | SBC LAN IP (example `192.168.1.85`) — **do not skip** on a fleet lab home |
 
-When a fleet token is provided, the installer writes fleet API settings to **`/opt/pbx3api/.env`** (`PBX3_FLEET_MODE`, org bucket, egress host) and should seed the instance-wide **`Egress`** trunk (not per-tenant).
+When a fleet token is provided, the installer writes fleet API settings to **`/opt/pbx3api/.env`** (`PBX3_FLEET_MODE`, org bucket, egress host), seeds the instance-wide **`Egress`** trunk when the seeder is present, and runs **`link-asterisk-configs.sh`** so **`/etc/asterisk/pjsip_ready_*.conf`** symlinks exist before your first Commit.
 
-The seeder script is looked for at (in order):
+The seeder is shipped at:
 
-1. `pbx3/scripts/seed-fleet-egress-trunk.sh` — **planned** (#5h; not shipped yet)
-2. `pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh` — full monorepo checkout
-3. `/tmp/seed-fleet-egress-trunk.sh` — copy from your Mac (see below)
+1. `pbx3/scripts/seed-fleet-egress-trunk.sh` — public clone / git tip
+2. `/opt/pbx3/scripts/seed-fleet-egress-trunk.sh` — from the **pbx3** deb
+3. `pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh` — full monorepo checkout
 
-A minimal public **`pbx3`** clone often has **no `pbx3-directory/`** on the VM — Egress seed is then skipped unless you copy the script.
-
-Non-interactive example:
+Non-interactive example (recommended for repeatable lab builds):
 
 ```bash
 sudo PBX3_FLEET_SERVICE_TOKEN='…' PBX3_ORG_BUCKET=lab-pbx3 \
      PBX3_SBC_EGRESS_HOST=192.168.1.85 ./scripts/install-home-host.sh
 ```
+
+## Clean re-install (same VM)
+
+Restore a **clean Ubuntu snapshot**, or on the home VM before re-running the installer:
+
+```bash
+sudo PBX3_CLEAN_INSTALL=1 \
+     PBX3_FLEET_SERVICE_TOKEN='…' PBX3_ORG_BUCKET=lab-pbx3 \
+     PBX3_SBC_EGRESS_HOST=192.168.1.85 \
+     ./scripts/install-home-host.sh
+```
+
+`PBX3_CLEAN_INSTALL=1` removes `/opt/pbx3/db/sqlite.db` and re-provisions a fresh `{shortuid}.pbx3.com` identity. The installer **fails** at the end if fleet `.env`, Egress trunk, or `/etc/asterisk/pjsip_ready_*.conf` symlinks are wrong — fix before adopt/phones.
 
 ## Prove it
 
@@ -120,7 +131,7 @@ PBX3_DIRECTORY_BACKUP_UPLOAD=true
 PBX3_SBC_EGRESS_HOST=192.168.1.85
 ```
 
-**Known installer gap (#5h):** if `PBX3_FLEET_MODE` appears glued to a comment line (e.g. `…PBXPBX3_FLEET_MODE=true`), split it onto its own line, then run `php artisan config:clear` as above.
+**Known installer gap (#5h):** if `PBX3_FLEET_MODE` appears glued to a comment line on an **old** install (pre-fix `.env` append), split it onto its own line, then run `php artisan config:clear`. New installs use a fixed append + trailing newline on `.env.example`.
 
 ### Seed Egress trunk (if SQL returns no row)
 
@@ -132,6 +143,7 @@ ssh tech@192.168.1.31
 chmod +x /tmp/seed-fleet-egress-trunk.sh
 sudo PBX3_SBC_EGRESS_HOST=192.168.1.85 /tmp/seed-fleet-egress-trunk.sh /opt/pbx3/db/sqlite.db
 sudo /opt/pbx3/scripts/genAst.sh
+sudo /opt/pbx3/scripts/link-asterisk-configs.sh
 sudo systemctl restart asterisk
 ```
 
