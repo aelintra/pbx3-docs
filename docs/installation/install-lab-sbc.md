@@ -45,6 +45,10 @@ Check: `systemctl is-active opensips mariadb` → both `active`.
 3. A **Filament admin password** (10+ characters, typed twice)
 4. The **fleet service token** from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — paste that exact value. Do not invent a second token. **Provision edge** fails with `401 Unauthorized` if Filament’s token does not match control (and the home).
 
+If you still see `401 Unauthorized` after verifying the token string matches control exactly, treat this as an operator drift / wrong-source copy problem and re-check what value ended up in `~/pbx3sbc-admin/.env`.
+
+Possible engineering revisit (#5g): modify the Provision edge / adopt flow so `pbx3sbc-admin` (or the home) can **pull the token from Gatekeeper/control automatically**, removing the long token re-type prompt entirely.
+
 If `~/pbx3sbc-admin` already exists, skip `git clone` and only `cd ~/pbx3sbc-admin`.
 
 ```bash

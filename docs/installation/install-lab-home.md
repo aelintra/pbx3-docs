@@ -49,15 +49,23 @@ Answer:
 | Admin SPA password | 8+ characters |
 | Fleet service token | from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) |
 | Org bucket | `lab-pbx3` |
-| SBC egress host | SBC LAN IP (example `192.168.1.85`) — do not skip |
+| SBC egress host | SBC LAN IP (example `192.168.1.85`) — **do not skip** on a fleet lab home |
 
-The installer writes fleet API settings to `/opt/pbx3api/.env` when a token is provided (`PBX3_FLEET_MODE`, org bucket, optional egress host). If you set the SBC egress host, it also seeds the **Egress** trunk and restarts Asterisk (needs `pbx3-directory/tools/seed-fleet-egress-trunk.sh` on the VM or in the monorepo checkout).
+When a fleet token is provided, the installer writes fleet API settings to **`/opt/pbx3api/.env`** (`PBX3_FLEET_MODE`, org bucket, egress host) and should seed the instance-wide **`Egress`** trunk (not per-tenant).
+
+The seeder script is looked for at (in order):
+
+1. `pbx3/scripts/seed-fleet-egress-trunk.sh` — **planned** (#5h; not shipped yet)
+2. `pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh` — full monorepo checkout
+3. `/tmp/seed-fleet-egress-trunk.sh` — copy from your Mac (see below)
+
+A minimal public **`pbx3`** clone often has **no `pbx3-directory/`** on the VM — Egress seed is then skipped unless you copy the script.
 
 Non-interactive example:
 
 ```bash
 sudo PBX3_FLEET_SERVICE_TOKEN='…' PBX3_ORG_BUCKET=lab-pbx3 \
-     PBX3_SBC_EGRESS_HOST=192.168.1.85 ./install-home-host.sh
+     PBX3_SBC_EGRESS_HOST=192.168.1.85 ./scripts/install-home-host.sh
 ```
 
 ## Prove it
@@ -68,6 +76,66 @@ On the VM (the installer also prints this):
 curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 # expect 200
 ```
+
+## Fleet posture on the home (verify)
+
+Fleet vs singleton is decided by **`GET /api/fleet-posture`** (SPA uses this to hide **Instance admin → Tenants → Create** on fleet nodes).
+
+On the instance, either signal makes **`fleet: true`**:
+
+| Signal | Where |
+|--------|--------|
+| **`PBX3_FLEET_MODE=true`** | `/opt/pbx3api/.env` (written by home installer when fleet token provided) |
+| **Active `Egress` trunk** | SQLite `trunks` row `pkey='Egress'` and `active='YES'` |
+
+Tenant create in Fleet does **not** seed the Egress trunk — that is **once per instance** at home install (or manual recovery below).
+
+After install, on the home VM:
+
+```bash
+grep -E '^PBX3_FLEET_MODE=|^PBX3_SBC_EGRESS_HOST=' /opt/pbx3api/.env
+sudo sqlite3 /opt/pbx3/db/sqlite.db "SELECT pkey, active, host FROM trunks WHERE pkey='Egress';"
+cd /opt/pbx3api && sudo -u www-data php artisan config:clear
+```
+
+In the SPA (logged into instance admin), DevTools console:
+
+```javascript
+fetch('/api/fleet-posture', { credentials: 'include' }).then(r => r.json()).then(console.log)
+```
+
+Expect `"fleet": true`. Then **Tenants** shows **Create via Fleet**, not a blue **Create** button.
+
+## If fleet `.env` or Egress is wrong (manual recovery)
+
+### Fix `/opt/pbx3api/.env`
+
+Fleet keys must be **uncommented**, each on its **own line**. Example:
+
+```env
+PBX3_FLEET_MODE=true
+PBX3_FLEET_SERVICE_TOKEN=<from control /etc/pbx3-gatekeeper/.env>
+PBX3_ORG_BUCKET=lab-pbx3
+PBX3_DIRECTORY_BACKUP_UPLOAD=true
+PBX3_SBC_EGRESS_HOST=192.168.1.85
+```
+
+**Known installer gap (#5h):** if `PBX3_FLEET_MODE` appears glued to a comment line (e.g. `…PBXPBX3_FLEET_MODE=true`), split it onto its own line, then run `php artisan config:clear` as above.
+
+### Seed Egress trunk (if SQL returns no row)
+
+From your **Mac** (adjust paths and IP):
+
+```bash
+scp ~/GiT/pbx3-master/pbx3/pbx3-directory/tools/seed-fleet-egress-trunk.sh tech@192.168.1.31:/tmp/
+ssh tech@192.168.1.31
+chmod +x /tmp/seed-fleet-egress-trunk.sh
+sudo PBX3_SBC_EGRESS_HOST=192.168.1.85 /tmp/seed-fleet-egress-trunk.sh /opt/pbx3/db/sqlite.db
+sudo /opt/pbx3/scripts/genAst.sh
+sudo systemctl restart asterisk
+```
+
+Re-check `fleet-posture` and the Tenants list.
 
 ## CAGI (needed for a call)
 
