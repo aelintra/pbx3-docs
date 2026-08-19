@@ -54,6 +54,8 @@ Leave Let’s Encrypt for later (cloud).
 
 Back in the SPA **Fleet console** (fleet email/password) → the Lab Home row → **Provision edge**. That assigns a dispatcher setid and whitelists the home IP on the SBC.
 
+**Reusing the same SBC VM** across install tests: Provision edge also **removes stale fleet-owned domain rows** on the SBC that are no longer in the catalog (prior tenants or decommissioned instances). You do not need to reinit the SBC database or delete domains by hand. Optional check: **Fleet → Catalog reconcile** — orphan rows should be gone after Provision edge.
+
 ## Two phones and a call
 
 1. Instance admin → a tenant → two extensions (example **101** / **102**). Commit.
