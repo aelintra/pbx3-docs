@@ -14,8 +14,8 @@ The PBX3 SBC edge router uses OpenSIPS.  OpenSIPS packages are **x86_64 only**. 
 |:--------:|-------|
 | ☐ | Ubuntu **24.04 amd64** VM with sudo and SSH (example lab: `192.168.1.85`) |
 | ☐ | HTTPS to GitHub (public **pbx3sbc** + **pbx3sbc-admin**) |
-| ☐ | A Filament admin email + password you invent (**10+** characters) |
-| ☐ | Fleet service token from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — pass it to the Filament installer. **Provision edge** is later, after you adopt the home. |
+| ☐ | A Filament admin email + password you invent (**10+** characters) — the installer will ask; do not put them in the paste |
+| ☐ | Fleet service token from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`) — the installer will ask. **Provision edge** is later, after you adopt the home. |
 
 No Let’s Encrypt on this Lab path (HTTP on the LAN IP).
 
@@ -38,26 +38,31 @@ Check: `systemctl is-active opensips mariadb` → both `active`.
 
 ## 2. Admin (Filament)
 
+**Stop — do not paste passwords or tokens.** The block below is safe to copy as-is. The installer will **ask** for:
+
+1. The OpenSIPS **database password** you invented in step 1 (typed twice)
+2. A **Filament admin email** (a real address, not a docs hint)
+3. A **Filament admin password** (10+ characters, typed twice)
+4. The **fleet service token** from control `/etc/pbx3-gatekeeper/.env` (`PBX3_FLEET_SERVICE_TOKEN`)
+
+If `~/pbx3sbc-admin` already exists, skip `git clone` and only `cd ~/pbx3sbc-admin`.
+
 ```bash
 cd ~
 git clone --depth 1 https://github.com/aelintra/pbx3sbc-admin.git
-cd pbx3sbc-admin
+cd ~/pbx3sbc-admin
 sudo ./install.sh \
   --server-name 192.168.1.85 \
   --db-host localhost --db-name opensips --db-user opensips \
-  --db-password '<same DB password>' \
   --opensips-mi-url http://127.0.0.1:8888/mi \
-  --admin-name Admin \
-  --admin-email '<your address>' \
-  --admin-password '<10+ characters>' \
-  --fleet-service-token '<from control .env>'
+  --admin-name Admin
 ```
 
-`--server-name` is the LAN IP (no public DNS). Skip `--letsencrypt`.
+`--server-name` is this VM’s LAN IP (no public DNS). Skip `--letsencrypt`.
 
-Open **http://192.168.1.85/admin** (login with the Filament email/password). Do not use snakeoil HTTPS.
+Open **http://192.168.1.85/admin** (login with the Filament email/password you typed). Do not use snakeoil HTTPS.
 
-If you skipped the fleet token, set `PBX3_FLEET_SERVICE_TOKEN` in `~/pbx3sbc-admin/.env` before you **Provision edge** (after adopt).
+If you skipped the fleet token at the prompt, set `PBX3_FLEET_SERVICE_TOKEN` in `~/pbx3sbc-admin/.env` before you **Provision edge** (after adopt).
 
 ## 3. Control already knows this IP
 
