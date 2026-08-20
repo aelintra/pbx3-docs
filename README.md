@@ -20,7 +20,7 @@ Open http://127.0.0.1:8000/
 
 Remote: **https://github.com/aelintra/pbx3-docs** (interim until the PBX3 OSS org exists).
 
-Push to `main` with Actions enabled; workflow runs `mkdocs gh-deploy --force` (same pattern as sail6-docs). Published site: **https://aelintra.github.io/pbx3-docs/**.
+Push to `main` with Actions enabled; workflow runs `mkdocs gh-deploy --force` (standard MkDocs Material + GitHub Pages pattern). Published site: **https://aelintra.github.io/pbx3-docs/**.
 
 ## Content map
 
