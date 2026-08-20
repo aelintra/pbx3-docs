@@ -85,6 +85,35 @@ cd ~/pbx3/pbx3-directory
 sudo PBX3_SBC_ADMIN_API_URL=http://192.168.1.85/api ./tools/install-control-host.sh
 ```
 
+## 4. WebRTC / WSS on the Lab SBC (required for SPA Line test)
+
+Desk SIP on **UDP 5060** works after steps 1–2. **Browser WebRTC does not** until you enable **WSS on the edge**.
+
+OpenSIPS ships with the W1 WSS block **commented out** (default off). Lab installs also skip Let’s Encrypt, so use the lab helper (self-signed cert for the SBC LAN IP). It installs WSS/TLS modules with **`force-confold`** (so an opensips package bump does not clobber your cfg) and enables **exactly one** cert pair (enabling both template examples makes OpenSIPS fail to start).
+
+On the **SBC VM** (adjust IP if yours is not `.85`):
+
+```bash
+cd ~/pbx3sbc
+git pull --ff-only   # need scripts/enable-lab-wss.sh
+sudo SBC_IP=192.168.1.85 ./scripts/enable-lab-wss.sh
+```
+
+Check: `ss -lnt | grep 8089` and `ss -ulnt | grep 5060` both show listeners; desk phones re-REGISTER.
+
+**SPA Line test** (after [Lab SPA](install-lab-spa.md) + a WebRTC extension): open the extension → **Line test** and set:
+
+| Field | Lab value |
+|-------|-----------|
+| WSS URL | `wss://192.168.1.85:8089/ws` (not the default `sbc.pbx3.com`) |
+| SIP domain | tenant FQDN (e.g. `nqybwn.pbx3.com`) |
+| SIP user | extension **shortuid** (not `105`) |
+
+!!! warning "Trust the self-signed cert"
+    Chrome/Safari reject untrusted `wss://` handshakes. On the Mac, copy `/etc/opensips/tls/lab-sbc-fullchain.pem` off the SBC into **Keychain Access → System** and set **Always Trust** for SSL, or use [mkcert](https://github.com/FiloSottile/mkcert) for `192.168.1.85`. Cloud fleets use real Let’s Encrypt — see [Install SBC](../fleet/install-sbc.md) § WebRTC WSS.
+
+Cloud VIP path (LE + `setup-opensips-wss.sh`, then enable **one** cert pair by hand): **`pbx3sbc/workingdocs/WEBRTC_W1_MAGRATHEA.md`**.
+
 That's it for this VM for now. Do **not** Provision edge yet — there is no home in the catalog.
 
 ## Next

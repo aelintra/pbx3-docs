@@ -102,6 +102,26 @@ Details: `pbx3sbc/workingdocs/LE_HTTPS_SBC_ADMIN.md`. SIP TLS out of scope.
 
 ---
 
+## 3a. WebRTC / WSS (edge SIP-over-WSS) — not on by default
+
+Desk phones use **UDP 5060**. **Browser WebRTC** needs **WSS on the SBC** (`wss://<edge-fqdn>:8089/ws`). The OpenSIPS template ships that block **commented out**.
+
+After admin HTTPS / LE for the edge FQDN (same name is fine for WSS certs):
+
+```bash
+cd ~/pbx3sbc
+sudo ./scripts/setup-opensips-wss.sh --cert-domain <PUBLIC_FQDN> --install-packages
+# Then enable W1 in /etc/opensips/opensips.cfg: modules/socket + EXACTLY ONE cert pair
+# (never both template examples — dual pairs → OpenSIPS will not start).
+# Open SG + host firewall TCP 8089, opensips -C, restart opensips; confirm UDP 5060 still up.
+```
+
+Checklist: **`pbx3sbc/workingdocs/WEBRTC_W1_MAGRATHEA.md`**. Lab LAN (self-signed, one command): [Install the Lab SBC](../installation/install-lab-sbc.md) §4 → `scripts/enable-lab-wss.sh`.
+
+SPA **Line test** defaults to `wss://sbc.pbx3.com:8089/ws` — override to your edge FQDN when different.
+
+---
+
 ## 4. Admin TOTP 2FA (optional, recommended)
 
 Filament admin supports **opt-in** authenticator-app MFA (TOTP). Any compliant app works (2FAS, Authy, Google Authenticator, …). **No SMS.** Fleet Bearer API (`/api/fleet/*`) is separate and does **not** use this MFA.

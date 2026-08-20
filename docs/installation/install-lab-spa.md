@@ -65,6 +65,10 @@ Do **not** open `https://192.168.1.31:44300` in the browser (snakeoil). Always u
 
 Modes use different passwords. Do not mix them.
 
+## WebRTC Line test (optional)
+
+After [Lab SBC §4 WSS](install-lab-sbc.md#4-webrtc--wss-on-the-lab-sbc-required-for-spa-line-test) and a **WebRTC** extension on the home: Extensions → detail → **Line test**. Override WSS to `wss://192.168.1.85:8089/ws` (trust the lab self-signed cert first). SIP domain = tenant FQDN; user = **shortuid**.
+
 That's it for this section.  You're almost there...
 
 ## Next
