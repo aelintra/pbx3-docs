@@ -6,7 +6,7 @@
 
 This is **VM B** in Lab deployment: pbx3 + pbx3api (Asterisk). No public DNS, no Let’s Encrypt. SIP to the phones goes through the SBC you just installed.
 
-The [cloud/solo install](install-pbx3-pbx3api.md) page is the same stack with DNS and TLS. Use **this** page on a LAN VM.
+The [cloud/solo install](install-pbx3-pbx3api.md) page uses the same `install-home-host.sh` stack, then DNS and Let’s Encrypt. Use **this** page on a LAN VM (no public DNS/LE; fleet token at install).
 
 Already done: [control](install-lab-control.md), then [SBC](install-lab-sbc.md).
 

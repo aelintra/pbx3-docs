@@ -2,7 +2,7 @@
 
 Run **one** PBX3 instance without fleet catalog, org S3, Gatekeeper, or SBC.
 
-**Install the stack first:** [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md) (clone → debs → API → DNS → LE). This page is sign-in and solo scope only.
+**Install the stack first:** [Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md) (`install-home-host.sh` → DNS → LE). This page is sign-in and solo scope only.
 
 ## What you need
 

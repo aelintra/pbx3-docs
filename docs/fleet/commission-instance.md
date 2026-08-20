@@ -6,7 +6,7 @@ This creates / uses a **new KSUID** from Install. It is **not** [Rebuild from S3
 
 | Phase | What | Where |
 |-------|------|--------|
-| **0** | EC2 + packages → identity → API → DNS → LE → SPA admin | **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** (required first) |
+| **0** | EC2 → `install-home-host.sh` (skip fleet) → DNS → LE → SPA admin | **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** (required first) |
 | **1** | Fleet adopt (IAM, catalog, Egress) | This page |
 | **2** | Provision edge + Fail2ban | This page |
 

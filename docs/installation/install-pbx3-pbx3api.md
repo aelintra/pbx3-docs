@@ -1,27 +1,33 @@
 # Install pbx3 and pbx3api
 
-Bring up a **clean Ubuntu 24.04** node from first principles: get packages → install → identity → API → DNS → TLS → prove `/up` → SPA admin.
+Bring up a **clean Ubuntu 24.04** node (EC2, VM, or bare metal) with public DNS and TLS: packages → identity → API → DNS → Let’s Encrypt → prove `/up` → SPA admin.
 
-This page is the **stack only** (solo or the install half of a fleet home). It does **not** run fleet onboard or Provision edge.
+This is the **same stack** as the [Lab home](install-lab-home.md) install (`install-home-host.sh`), plus public DNS and LE. It does **not** run fleet onboard or Provision edge.
 
 | After this page | Continue at |
 |-----------------|-------------|
 | Stay solo | [Solo trial](../getting-started/solo-trial.md) |
 | **New fleet home** (you just finished Install) | [Commission a fleet instance](../fleet/commission-instance.md) → **Step 1 Adopt** |
 | Node already up; adopt only | [Onboard](../fleet/onboard-instance.md) |
+| LAN lab (no DNS / LE) | [Install the Lab home PBX](install-lab-home.md) |
 
 !!! tip "New EC2 into the fleet end-to-end"
     Do this Install page first (includes bringing up the host for LE). Then [Commission](../fleet/commission-instance.md) for onboard + edge — Commission does not repeat EC2/DNS/LE.
+
+!!! note "Fleet timing (cloud vs lab)"
+    **Skip the fleet service token** on this page (press Enter when prompted, or omit `PBX3_FLEET_SERVICE_TOKEN`). [Commission](../fleet/commission-instance.md) / onboard writes fleet `.env` and Egress. Lab home seeds fleet at install time because there is no separate Mac onboard step.
 
 ## What you are installing
 
 | Piece | Form | Lands on the node as |
 |-------|------|----------------------|
-| **pbx3** | `.deb` | `/opt/pbx3` — Asterisk configs, SQLite, scripts |
-| **pbx3cagi** | `.deb` | CAGI (call logic) — install with pbx3 |
+| **pbx3** | `.deb` (via `install-home-host.sh`) | `/opt/pbx3` — Asterisk configs, SQLite, scripts |
 | **pbx3api** | **git tree** (no `.deb`) | `/opt/pbx3api` — nginx + PHP-FPM API on **:44300** |
+| **pbx3cagi** | `.deb` (amd64; still private) | CAGI binary — install after the home script (see [CAGI](#cagi-needed-for-a-call)) |
 
-There is **no** monorepo. GitHub has separate repos. Release `.deb`s live at the **root of `pbx3` and `pbx3cagi` on `main`** today (private repos — clone from a laptop that already has GitHub auth).
+There is **no** monorepo. GitHub has separate repos. Release `.deb`s live at the **root of `pbx3` and `pbx3cagi` on `main`**. **pbx3api** is public; **pbx3** / **pbx3cagi** are still private today.
+
+**Package floor (adjust when newer):** prefer the newest `pbx3_*.deb` on `main` (script picks the highest version next to the script). Cloud lab floor reference: `pbx3_0.0.5-5` / rebuild `0.0.5-6` · `pbx3cagi_1.0.0-18`.
 
 ---
 
@@ -31,16 +37,14 @@ There is **no** monorepo. GitHub has separate repos. Release `.deb`s live at the
 |:--------:|-------|
 | ☐ | Ubuntu **24.04** node with sudo (bare metal, VM, or EC2) |
 | ☐ | SSH access (`ubuntu@…` or equivalent) + private key if needed |
-| ☐ | Laptop with **git**, **scp**, and GitHub access to **`aelintra/pbx3`**, **`aelintra/pbx3cagi`**, **`aelintra/pbx3api`** |
+| ☐ | Laptop with **git**, **scp**/**rsync**, and GitHub access to **`aelintra/pbx3`** (and **`pbx3cagi`** for calls) |
 | ☐ | Inbound **22**, **80** (LE), **44300**; outbound **443** — see [Requirements](requirements.md) |
 | ☐ | DNS control for an apex (e.g. `pbx3.com`) **or** readiness to create an **A** record after install |
-| ☐ | Email for Let’s Encrypt + friendly site **Name** + admin SPA email/password you invent |
-
-**Lab packages (adjust when newer):** `pbx3_0.0.5-5_all.deb` · `pbx3cagi_1.0.0-18_all.deb`.
+| ☐ | Email for Let’s Encrypt + friendly site **Name** + admin SPA email/password you invent (**8+** characters; not a docs placeholder) |
 
 ### Worksheet
 
-Use **straight** quotes only. Put comments on their **own** lines — zsh often treats `# …` on the same line as `export` as more arguments (so `# or user@host` becomes `export: not valid in this context: user@host`).
+Use **straight** quotes only. Put comments on their **own** lines — zsh often treats `# …` on the same line as `export` as more arguments.
 
 ```bash
 # SSH key path (omit KEY_FILE later if your agent already has the key)
@@ -57,115 +61,105 @@ export SITE_NAME='My node'
 # Apex; installer mints opaque shortuid → fqdn={shortuid}.{apex}
 export DOMAIN_TLD=pbx3.com
 
-# After installer (Step 4), from sqlite fqdn column, e.g. 7k2m9q.pbx3.com:
+# SPA admin (required for non-interactive install)
+export ADMIN_EMAIL=you@example.com
+export ADMIN_PASSWORD='choose-a-strong-password'
+
+# After install (Step 3), from sqlite:
 # export INSTANCE_FQDN=…
+# export KSUID=…
+# export SHORTUID=…
 ```
 
 ---
 
-## Step 1 — Clone package repos on the laptop
+## Step 1 — Get sources on the node
 
-On your **ops laptop** (not the PBX node):
+The home installer expects a **`pbx3` tree** that contains `scripts/install-home-host.sh`, a `pbx3_*.deb` on `main`, and **`pbx3api`** nested as `pbx3/pbx3api` (or already at `/opt/pbx3api`).
+
+### Prefer: clone on the node when repos are reachable
+
+**pbx3api** is public. If **pbx3** clone works on the node:
 
 ```bash
-mkdir -p ~/GiT/pbx3-master
-cd ~/GiT/pbx3-master
-
-git clone https://github.com/aelintra/pbx3.git
-git clone https://github.com/aelintra/pbx3cagi.git
-# pbx3api is cloned onto the node in Step 5 (or scp’d if the node has no GitHub access)
-
-cd pbx3 && git checkout main && git pull --ff-only
-cd ../pbx3cagi && git checkout main && git pull --ff-only
-
-export PBX3_DEB=~/GiT/pbx3-master/pbx3/pbx3_0.0.5-5_all.deb
-export CAGI_DEB=~/GiT/pbx3-master/pbx3cagi/pbx3cagi_1.0.0-18_all.deb
-test -f "$PBX3_DEB" && test -f "$CAGI_DEB" && echo "debs ok"
+ssh -i "$KEY_FILE" "$SSH_HOST"
+# on the node:
+sudo apt-get update && sudo apt-get install -y git
+cd ~
+git clone --depth 1 https://github.com/aelintra/pbx3.git
+git clone --depth 1 https://github.com/aelintra/pbx3api.git pbx3/pbx3api
 ```
 
-The parent folder name (`pbx3-master`) is arbitrary. Point the `export`s at wherever you cloned.
+### Usual lab path while pbx3 is private
 
-!!! note "Why not clone debs on the node?"
-    While **pbx3** / **pbx3cagi** are private, every new box would need deploy keys. Copying release `.deb`s from a laptop that already authenticates to GitHub is the usual lab path. When those repos are public, on-node `git clone` + build becomes fine.
+Copy the tree (including the `.deb` on `main`) from a laptop that already has GitHub auth:
+
+```bash
+# laptop — refresh tips
+cd ~/GiT/pbx3-master/pbx3 && git checkout main && git pull --ff-only
+cd ~/GiT/pbx3-master/pbx3api && git checkout main && git pull --ff-only
+
+# copy pbx3 (deb + install-home-host.sh) then nest pbx3api
+rsync -az --exclude .git -e "ssh -i $KEY_FILE" \
+  ~/GiT/pbx3-master/pbx3/ "${SSH_HOST}:~/pbx3/"
+rsync -az --exclude .git -e "ssh -i $KEY_FILE" \
+  ~/GiT/pbx3-master/pbx3api/ "${SSH_HOST}:~/pbx3/pbx3api/"
+```
+
+Omit `-e "ssh -i $KEY_FILE"` if your agent / default key already works.
 
 ---
 
-## Step 2 — Copy `.deb`s to the node
+## Step 2 — Run the home installer (skip fleet)
+
+On the **node**:
 
 ```bash
-scp -i "$KEY_FILE" "$PBX3_DEB" "$CAGI_DEB" "${SSH_HOST}:/tmp/"
-# omit -i "$KEY_FILE" if your SSH agent / default key already works
-```
-
----
-
-## Step 3 — Node: OS prep and install packages
-
-SSH in, then:
-
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y ssmtp sqlite3 curl ca-certificates git
-sudo chmod +x /etc/ssmtp
-
-cd /tmp
-sudo apt install -y ./pbx3_0.0.5-5_all.deb ./pbx3cagi_1.0.0-18_all.deb
-dpkg-query -W pbx3 pbx3cagi
-```
-
-`apt install` places files under `/opt/pbx3`. It does **not** create the customer DB — that is the next step.
-
----
-
-## Step 4 — First-run installer (identity)
-
-You do **not** type the FQDN. You supply the **apex**; the installer mints an opaque **shortuid** and sets `fqdn = {shortuid}.{apex}`.
-
-| You provide | Installer writes |
-|-------------|------------------|
-| `DOMAIN_TLD` (e.g. `pbx3.com`) | `shortuid`, `fqdn` = `{shortuid}.pbx3.com` |
-| `INSTANCE_SITENAME` | Friendly **Name** on Home |
-| Admin email + password | First SPA user (no factory password) |
-| — | `globals.id` (**KSUID**) |
-
-```bash
+cd ~/pbx3
 sudo DOMAIN_TLD="${DOMAIN_TLD}" \
   INSTANCE_SITENAME="${SITE_NAME}" \
   PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" \
   PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
-  /opt/pbx3/scripts/installer.sh
+  ./scripts/install-home-host.sh
 ```
 
-Use your real SPA login email/password in the worksheet exports (`ADMIN_EMAIL` / `ADMIN_PASSWORD`). Omit `PBX3_ADMIN_*` to answer prompts on a real TTY. Details: [First-run installer](first-run.md).
+Or interactive: `sudo ./scripts/install-home-host.sh` — answer apex (Enter → `pbx3.com`), site name, admin email/password, then **Enter to skip fleet** when asked for the fleet service token.
 
-**Do not** pass vanity `INSTANCE_FQDN=kildare.pbx3.com` unless you intentionally set `PBX3_ALLOW_VANITY_FQDN=1`.
+The script:
 
-Verify an admin was created (installer end banner also reports this on current `installer.sh`):
+- installs the newest `pbx3_*.deb` it finds next to the script (or set `PBX3_DEB=…`)
+- runs `/opt/pbx3/scripts/installer.sh` (mints `{shortuid}.{apex}`; no vanity FQDN)
+- installs **pbx3api** and runs its installer (`migrate --force` as **www-data**; writable Laravel log)
+- leaves API on **snakeoil** `:44300` (LE is Step 5)
+
+!!! warning
+    Do **not** pass a fleet token here if this box will [Commission](../fleet/commission-instance.md) next — onboard owns `PBX3_ORG_BUCKET` / token / Egress.  
+    Do **not** run `reloader.sh` after a clean first install.  
+    Do **not** pass vanity `INSTANCE_FQDN=kildare.pbx3.com` unless you intentionally set `PBX3_ALLOW_VANITY_FQDN=1`.
+
+**Clean re-install** (same host, wipe DB identity):
 
 ```bash
-sqlite3 /opt/pbx3/db/sqlite.db "SELECT id,email FROM users;"
-# must show at least one row — email must be yours, not a docs placeholder
+cd ~/pbx3
+sudo PBX3_CLEAN_INSTALL=1 \
+  DOMAIN_TLD="${DOMAIN_TLD}" INSTANCE_SITENAME="${SITE_NAME}" \
+  PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+  ./scripts/install-home-host.sh
 ```
 
-If empty (older packages called bootstrap with `/bin/sh` and silently failed), create one with **your** address:
+---
+
+## Step 3 — Record identity
+
+The installer mints these; they are **not** the SSH nickname. Capture before DNS / LE:
 
 ```bash
-sudo PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" \
-  PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
-  /opt/pbx3/scripts/bootstrap-admin-user.sh
-# or interactive on a real TTY:
-# sudo /opt/pbx3/scripts/bootstrap-admin-user.sh
-```
-### Required — record identity before DNS / LE
-
-The installer mints these; they are **not** the SSH nickname (e.g. `virginia1.pbx3.com`). Newer installer builds print a final **Instance identity** block; always capture them either way:
-
-```bash
-# On the node — shows KSUID | shortuid | fqdn | sitename
 sqlite3 /opt/pbx3/db/sqlite.db \
   "SELECT id, shortuid, fqdn, sitename FROM globals WHERE pkey='global';"
 
-# Export into this shell (and your Mac worksheet) — required before dig / LE
+sqlite3 /opt/pbx3/db/sqlite.db "SELECT id,email FROM users;"
+# must show at least one row — your email, not a docs placeholder
+
 export KSUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT id FROM globals WHERE pkey='global';")
 export SHORTUID=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT shortuid FROM globals WHERE pkey='global';")
 export INSTANCE_FQDN=$(sqlite3 /opt/pbx3/db/sqlite.db "SELECT fqdn FROM globals WHERE pkey='global';")
@@ -174,74 +168,19 @@ echo "SHORTUID=$SHORTUID"
 echo "INSTANCE_FQDN=$INSTANCE_FQDN"
 ```
 
-Do **not** continue to Step 7 until `echo "$INSTANCE_FQDN"` prints a real name (e.g. `xhcjkh.pbx3.com`). Empty → `dig` fails with `'' is not a legal name`.
+Do **not** continue until `echo "$INSTANCE_FQDN"` prints a real name (e.g. `xhcjkh.pbx3.com`). Empty → `dig` fails with `'' is not a legal name`.
 
-!!! warning
-    Do **not** run `reloader.sh` after a clean first install.  
-    Do **not** set fleet `PBX3_ORG_BUCKET` yet if you plan to [onboard](../fleet/onboard-instance.md) later — the onboard script owns that.
-
----
-
-## Step 5 — Deploy pbx3api
-
-pbx3api is a **git checkout** at `/opt/pbx3api`, then its installer.
-
-### Prefer: clone on the node
+If `users` is empty (older floor debs), create an admin:
 
 ```bash
-sudo rm -rf /opt/pbx3api
-sudo git clone https://github.com/aelintra/pbx3api.git /opt/pbx3api
-cd /opt/pbx3api
-sudo git checkout main
-sudo git pull --ff-only origin main
-```
-
-If the repo is private and the node has no credentials, clone on the laptop and copy:
-
-```bash
-# laptop
-git clone https://github.com/aelintra/pbx3api.git /tmp/pbx3api
-scp -i "$KEY_FILE" -r /tmp/pbx3api "${SSH_HOST}:/tmp/pbx3api"
-# node
-sudo rm -rf /opt/pbx3api
-sudo mv /tmp/pbx3api /opt/pbx3api
-```
-
-### Run the API installer
-
-Drop nginx’s default site if it will fight for port **80** (needed for Let’s Encrypt):
-
-```bash
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo /opt/pbx3api/scripts/installer.sh
-```
-
-The installer (current tip):
-
-- points Laravel at `/opt/pbx3/db/sqlite.db`
-- runs **`php artisan migrate --force` as `www-data`** (adds Sanctum/2FA/privilege columns on the shared DB)
-- keeps **`storage/logs/laravel.log` writable by `www-data`** (root-owned log → SPA login **500**)
-
-API listens on **`https://<host>:44300`** (snakeoil until Step 7).
-
-Do **not** run `sudo php artisan …` afterward as root — that recreates root-owned logs. If you need artisan:
-
-```bash
-cd /opt/pbx3api
-sudo -u www-data php artisan migrate --force
-sudo -u www-data php artisan config:clear
-```
-
-Optional if `vendor/` is missing (installer usually runs composer):
-
-```bash
-cd /opt/pbx3api
-sudo composer install --no-dev
+sudo PBX3_ADMIN_EMAIL="${ADMIN_EMAIL}" \
+  PBX3_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+  /opt/pbx3/scripts/bootstrap-admin-user.sh
 ```
 
 ---
 
-## Step 6 — Prove the stack (before DNS)
+## Step 4 — Prove the stack (before DNS)
 
 **On the node**, use loopback — not the public FQDN:
 
@@ -273,16 +212,16 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ---
 
-## Step 7 — DNS
+## Step 5 — DNS
 
-Requires **`INSTANCE_FQDN`** from [Step 4](#required--record-identity-before-dns--le). If unset, stop and export it — do not dig an empty name.
+Requires **`INSTANCE_FQDN`** from [Step 3](#step-3--record-identity). If unset, stop and export it — do not dig an empty name.
 
 | Name | Type | Value |
 |------|------|--------|
 | Exact `globals.fqdn` (e.g. `xhcjkh.pbx3.com`) | **A** | Node public IP / EIP |
 
 ```bash
-test -n "$INSTANCE_FQDN" || { echo "INSTANCE_FQDN not set — re-run Step 4 exports"; exit 1; }
+test -n "$INSTANCE_FQDN" || { echo "INSTANCE_FQDN not set — re-run Step 3 exports"; exit 1; }
 echo "Checking DNS for $INSTANCE_FQDN"
 dig +short "$INSTANCE_FQDN"
 # must equal this node’s public IP
@@ -292,7 +231,7 @@ Fleet nodes do **not** publish public tenant A records. Solo multi-tenant Option
 
 ---
 
-## Step 8 — First Let’s Encrypt certificate
+## Step 6 — First Let’s Encrypt certificate
 
 Port **80** must reach this host from the internet. DNS A must already match.
 
@@ -303,7 +242,7 @@ sudo /opt/pbx3/scripts/le-instance-bootstrap.sh "$LE_EMAIL"
 
 Or SPA → **Certificates → Get certificate** after snakeoil login. Full notes: [First Let's Encrypt certificate](../tls/first-letsencrypt.md).
 
-**Prove trusted HTTPS from the ops laptop** (not from the node — see hairpin warning in Step 6). SG must allow your Mac’s public IP on **44300**:
+**Prove trusted HTTPS from the ops laptop** (not from the node — see hairpin warning in Step 4). SG must allow your Mac’s public IP on **44300**:
 
 ```bash
 # On the Mac / ops workstation
@@ -314,21 +253,39 @@ curl -4 -sS --connect-timeout 5 --max-time 10 -o /dev/null -w "%{http_code}\n" "
 curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 ```
 
-Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.md) with the email/password from Step 4. API base URL example: `https://${INSTANCE_FQDN}:44300/api`.
+Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.md) with the email/password from the worksheet. API base URL example: `https://${INSTANCE_FQDN}:44300/api`.
+
+---
+
+## CAGI (needed for a call)
+
+**pbx3cagi** is still private. On **amd64** cloud nodes, copy the release `.deb` from a laptop that has the repo and install it:
+
+```bash
+# laptop
+cd ~/GiT/pbx3-master/pbx3cagi && git checkout main && git pull --ff-only
+# use the newest pbx3cagi_*.deb on main (floor reference: 1.0.0-18)
+scp -i "$KEY_FILE" pbx3cagi_1.0.0-18_all.deb "${SSH_HOST}:/tmp/"
+
+# node
+sudo apt install -y /tmp/pbx3cagi_1.0.0-18_all.deb
+dpkg-query -W pbx3cagi
+```
+
+Lab ARM guests compile from source — see [Lab home → CAGI](install-lab-home.md#cagi-needed-for-a-call).
 
 ---
 
 ## Checklist
 
-- [ ] Cloned `pbx3` + `pbx3cagi` on laptop; `.deb`s present
-- [ ] Copied debs to node; `apt install` succeeded
-- [ ] `installer.sh` created KSUID / opaque FQDN / admin user
-- [ ] pbx3api at `/opt/pbx3api`; API installer run (**migrate as www-data**; log writable)
+- [ ] `pbx3` tree + `pbx3api` on the node; `install-home-host.sh` succeeded (fleet skipped)
+- [ ] KSUID / opaque FQDN / admin user recorded
 - [ ] `GET https://127.0.0.1:44300/up` → **200** (on node)
 - [ ] DNS **A** for `globals.fqdn` → public IP
 - [ ] Let’s Encrypt applied
 - [ ] From **ops laptop**: trusted `https://{fqdn}:44300/up` → **200** (SG allows your IP on 44300)
 - [ ] Admin SPA login works from the laptop
+- [ ] (Calls) `pbx3cagi` installed on amd64
 
 ## Failure cheat sheet
 
@@ -337,10 +294,11 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 | On node, `curl https://$INSTANCE_FQDN:44300/up` hangs | Expected hairpin — use `127.0.0.1` on the node; public URL from the laptop |
 | Laptop curl to `:44300` times out (~5–130s) | SG: add your public IP `/32` on **44300** (port 80 open is not enough) |
 | LE fails `example.com` contact | Use a real email — Let’s Encrypt rejects `*.example.com` |
-| `/up` not 200 on localhost | pbx3api installer, nginx default site, PHP-FPM |
-| SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` with **your** email (see Step 4). Installer must call bootstrap with **bash**, not `sh` |
+| `/up` not 200 on localhost | home installer / nginx default site / PHP-FPM — re-check Step 2–4 |
+| SPA login fails / `users` empty | Run `bootstrap-admin-user.sh` with **your** email (see Step 3) |
 | SPA “Cannot reach API” but `curl …/up` is 200 | Often login **500**: root-owned `storage/logs/laravel.log` or missing migrate columns. Fix: `sudo chown www-data:www-data /opt/pbx3api/storage/logs/laravel.log` and `sudo -u www-data php artisan migrate --force` |
 | `sudo php artisan …` after install | Prefer `sudo -u www-data php artisan …` — root recreates the log-ownership trap |
+| Fleet `.env` / Egress missing on a **fleet** home | Expected after this page — continue at [Commission](../fleet/commission-instance.md); do not paste the lab fleet-token install block here |
 
 ## Next
 
@@ -355,7 +313,9 @@ Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.
 | New fleet home (after Install) | [Commission](../fleet/commission-instance.md) |
 | Adopt only | [Onboard](../fleet/onboard-instance.md) or Commission Step 1 |
 | Same KSUID after EC2 loss | [Rebuild from S3](../fleet/rebuild-from-s3.md) |
+| LAN lab (no DNS/LE) | [Lab home](install-lab-home.md) |
 
 ## Related
 
 - [Requirements](requirements.md) · [First-run installer](first-run.md) · [Upgrade a package](upgrade.md)
+- Lab: [operator worksheet](install-lab-worksheet.md) · [Lab home](install-lab-home.md)
