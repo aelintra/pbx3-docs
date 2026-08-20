@@ -90,7 +90,7 @@ Open the SBC admin UI (lab: `https://sbc.pbx3.com/admin`).
 
 ### 3b — Fail2ban whitelist
 
-**Fail2ban → Whitelist** → remove this home’s public IP `/32` (lab gap until fleet-home auto-whitelist ships).
+**Automatic on Fleet Decom:** Gatekeeper calls the SBC **`retire-node-whitelist`** API and drops rows tagged **`Fleet home {instance_id}`**. Manual cleanup is only needed if Decom was done before this shipped or the SBC was unreachable.
 
 ### 3c — Dispatcher destinations (setid)
 
@@ -141,8 +141,8 @@ Then Fleet Create / move tenants back, re-allocate DIDs, smoke in/out calls, Fle
 - [ ] DIDs released (if not keeping ownership)
 - [ ] Instance **Decom** (or `unregister-instance.sh`)
 - [ ] Instance **Remove** from catalog when retired (decommissioned row, or `unregister-instance.sh --remove`)
-- [ ] SBC Peer removed
-- [ ] Fail2ban whitelist IP removed
+- [ ] SBC Peer removed (optional if orphan setid is harmless)
+- [x] Fail2ban fleet-home whitelist retired (automatic on Fleet **Decom**)
 - [ ] DNS instance A removed/parked
 - [ ] EC2 terminated (EIP decision made)
 - [ ] (If replacing) [commission](commission-instance.md) + tenants/DIDs restored
