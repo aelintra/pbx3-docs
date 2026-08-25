@@ -131,7 +131,7 @@ The script:
 - runs `/opt/pbx3/scripts/installer.sh` (mints `{shortuid}.{apex}`; no vanity FQDN)
 - installs **pbx3api** and runs its installer (`migrate --force` as **www-data**; writable Laravel log)
 - leaves API on **snakeoil** `:44300` (LE is Step 5)
-- applies **UFW** baseline (SSH :22 + API :44300 from **`any`** so you are not locked out — narrow later in [Firewall](../admin/firewall.md))
+- applies **UFW** baseline (**fleet:** SSH :22 + API :44300 from **`any`** — narrow later; **solo:** those plus SIP/RTP from **LAN CIDR** — see [Firewall](../admin/firewall.md))
 
 !!! warning
     Do **not** pass a fleet token here if this box will [Commission](../fleet/commission-instance.md) next — onboard owns `PBX3_ORG_BUCKET` / token / Egress.  
