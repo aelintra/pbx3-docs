@@ -406,14 +406,9 @@ Tenant table `appl`. API sets `id` / `shortuid` on create — do not send them.
 
 ---
 
-## Devices (A)
+## Devices (removed 2026-08-25)
 
-Provisioning templates (instance-scoped, pkey-only). Replaces the old SARK “templates” resource name.
-
-#### GET /devices · GET /devices/{device}
-#### POST /devices · PUT /devices/{device} · DELETE /devices/{device}
-
-Bodies: *verify* `DeviceController`.
+Provisioning templates (`/devices`) and the instance **Device** table were removed — in-house provisioner won't-do. Extension type lives on **`ipphone.device`** (General SIP / WebRTC / MAILBOX / MAC OUI vendor). Existing DBs: `sqlite_device_drop.sql`.
 
 ---
 
