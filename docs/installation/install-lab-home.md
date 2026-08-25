@@ -89,6 +89,8 @@ curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 # expect 200
 ```
 
+UFW leaves **SSH :22** and **API :44300** open from anywhere so install cannot lock you out. After the SPA is up, open **Admin → Firewall**, narrow those Source fields to your LAN/ops CIDR(s), then Save and Apply. See [Firewall](../admin/firewall.md).
+
 ## Fleet posture on the home (verify)
 
 Fleet vs singleton is decided by **`GET /api/fleet-posture`** (SPA uses this to hide **Instance admin → Tenants → Create** on fleet nodes).
