@@ -125,6 +125,8 @@ Nodes are **logically identical and interchangeable** — that's what makes movi
 
 The **SBC** (built on OpenSIPS) is the single, stable address every phone talks to. Its job is deceptively simple: *"for this tenant's domain, which node should I send this to?"* It answers from a small routing table.
 
+**What it is (and isn’t):** a **signaling border / proxy-registrar** — REGISTER, DID routing, Peers, WSS. **Media stays on the home** (RTP bypass). It is not a classic media B2BUA with transcoding; for those RFQs (or Teams Direct Routing), peer a commercial SBC ahead.
+
 This one indirection is what makes the fleet flexible:
 - **Phones never move.** They always point at the SBC.
 - **Moving a tenant** = change one row in the SBC's table (tenant domain → new node). Seconds, reversible, no DNS wait.
@@ -308,7 +310,7 @@ You can start solo and grow into a fleet; the node software is the same.
 |------|---------|
 | **Tenant** | One customer's phone system (extensions, IVR, rules). Portable. |
 | **Instance / Node** | One PBX server (Asterisk + local DB + firewall + certs). Hosts tenants. |
-| **SBC** | Session Border Controller — the fleet's single front door for phones and carriers. |
+| **SBC** | Session Border Controller — the fleet's single SIP front door (signaling / proxy-registrar; RTP on the home). |
 | **S3 directory** | Shared store recording which tenant lives on which node, plus backups/recordings. |
 | **Control plane** | The fleet management brain (superadmin, tenant moves, DID assign, edge project). Not in the call path. UI: **Fleet mode** in the admin SPA (separate API). Catalog is home of record; the SBC is a projection. |
 | **DID / DDI** | A phone number that reaches a tenant from the outside world. |

@@ -6,6 +6,9 @@
 
 This is **VM C**, the SBC Edge router — OpenSIPS + Filament admin on **amd64**. Control (`.33`) is already up. The home PBX comes **after** this page so the home installer can set Egress in one pass.
 
+!!! note "What “SBC” means here"
+    Signaling border / proxy-registrar — phones and carriers hit this box for SIP; **RTP stays on the home** (not a media B2BUA). Same idea as the cloud [Install SBC edge](../fleet/install-sbc.md) page.
+
 The PBX3 SBC edge router uses OpenSIPS.  OpenSIPS packages are **x86_64 only**. Do not use this section on ARM VMs.  If you have no option then you will need to install OpenSIPS from source and compile it.   You can find full instructions on the opensips website.
 
 ## What you need

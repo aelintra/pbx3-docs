@@ -2,6 +2,9 @@
 
 Greenfield install of the **SIP edge** (`pbx3sbc` / OpenSIPS + MariaDB) and the **Filament admin** (`pbx3sbc-admin`) on **Ubuntu 24.04 amd64**.
 
+!!! note "What “SBC” means here"
+    PBX3’s SBC is a **signaling border / proxy-registrar** (stable SIP front door: REGISTER, DID routing, Peers, WSS). **Media stays on the home** (RTP bypass) — not a B2BUA with transcoding. For classic media-terminating / Teams-certified SBC needs, peer a commercial box ahead (Rule 7).
+
 This is **not** [SBC backup and restore](sbc-backup-restore.md) (cold DR) and **not** an HA promote drill — but the same install is the baseline for an active–passive pair (shared EIP / VIP as `advertised_address`).
 
 !!! note "Architecture"
