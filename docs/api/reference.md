@@ -514,17 +514,13 @@ Bodies: *verify* `CertificateController`. See also TLS admin guides.
 
 ## Firewall (A)
 
-Operates on the whole Shorewall ruleset as an array. GET returns rules; POST validates/saves; PUT restarts.
+Declarative **UFW** allow-list (not Shorewall). `GET` returns allow rows; `POST` validates/saves; `PUT` applies / restarts UFW via the home apply script.
 
+#### GET /firewalls · POST /firewalls · PUT /firewalls
 #### GET /firewalls/ipv4 · POST /firewalls/ipv4 · PUT /firewalls/ipv4
 #### GET /firewalls/ipv6 · POST /firewalls/ipv6 · PUT /firewalls/ipv6
 
-**POST body:**
-
-```
-'rules' => 'required',
-```
-
+**POST body:** allow-list payload (*verify* `FirewallController`). IPv4 aliases remain for older clients.
 ---
 
 ## Asterisk config files (A)

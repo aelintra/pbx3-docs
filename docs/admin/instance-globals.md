@@ -13,4 +13,4 @@ Route: `/sysglobals`
 
 ## FQDN inspect
 
-Enable when internet SIP uses URI string matching for tenant FQDNs (common with SBC + multi-tenant). Regenerates related firewall / Asterisk pieces on tenant changes and Commit.
+Legacy Shorewall STRING matching on SIP. **Fleet homes on UFW:** leave **off** — SIP safety is **SBC + “5060 from SBC only”**. Solo/direct may still show the toggle; it does not drive UFW rules. Prefer strong credentials and source allows in [Firewall](firewall.md).

@@ -2,7 +2,7 @@
 
 | Symptom | Fix |
 |---------|-----|
-| Still snakeoil | DNS missing; port **80** blocked (SG **and** Shorewall); run bootstrap / Get certificate |
+| Still snakeoil | DNS missing; port **80** blocked (SG **and** UFW); run bootstrap / Get certificate |
 | Hostname mismatch after new tenant | DNS → node; Certificates → **Sync** (not Renew) |
 | After restore / rebuild | Sync + DNS for all SANs |
 | Custom “stuck” over LE | Remove purchased cert |

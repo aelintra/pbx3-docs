@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - A (and optional AAAA) for **every** name that will appear on the cert → this node's public IP
-- Port **80** reachable from the internet during the challenge (cloud SG **and** Shorewall)
+- Port **80** reachable from the internet during the challenge (cloud SG **and** UFW)
 
 ## CLI
 
