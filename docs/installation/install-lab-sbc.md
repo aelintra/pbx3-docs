@@ -47,6 +47,7 @@ Check: `systemctl is-active opensips mariadb` → both `active`.
 2. A **Filament admin email** (a real address, not a docs hint)
 3. A **Filament admin password** (10+ characters, typed twice)
 4. The **fleet service token** from control — paste that **exact** value (same as cloud commission). Do not invent a second token. **Provision edge** fails with `401 Unauthorized` if this does not match control (and the home).
+5. **Site timezone** for Home/CDR day buckets (IANA, e.g. `America/New_York`). Default = this host’s `/etc/timezone` — press Enter to accept. Does **not** change the OS clock (`timedatectl`). Override with `--site-timezone` or `PBX3_SBC_SITE_TIMEZONE`. Federated preference: keep the host on **UTC**; set site TZ only when operators need a local “today” bucket.
 
 Non-interactive (same as cloud — export once on your ops machine):
 
@@ -55,6 +56,7 @@ export PBX3_FLEET_SERVICE_TOKEN='paste-from-control-grep'
 sudo ./install.sh \
   --server-name 192.168.1.85 \
   --fleet-service-token "$PBX3_FLEET_SERVICE_TOKEN" \
+  --site-timezone America/New_York \
   --db-host localhost --db-name opensips --db-user opensips \
   --opensips-mi-url http://127.0.0.1:8888/mi \
   --admin-name Admin

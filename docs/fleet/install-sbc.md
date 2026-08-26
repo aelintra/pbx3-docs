@@ -65,8 +65,11 @@ sudo ./install.sh \
   --opensips-mi-url http://127.0.0.1:8888/mi \
   --admin-name Admin \
   --admin-email '<ADMIN_EMAIL>' \
-  --admin-password '<ADMIN_PASSWORD>'
+  --admin-password '<ADMIN_PASSWORD>' \
+  --site-timezone America/New_York
 ```
+
+`--site-timezone` (or `PBX3_SBC_SITE_TIMEZONE`) sets Filament Home/CDR day buckets (`SiteTimezone`). Default when omitted: host `/etc/timezone`. Interactive installs prompt (Enter = host default). Does **not** run `timedatectl`. Federated preference: OS **UTC**; override site TZ only when operators need a non-UTC day bucket.
 
 Optional HTTPS in the same pass (DNS + SG 80/443 ready):
 
