@@ -51,6 +51,7 @@ Answer:
 | Fleet admin email | your address |
 | Fleet admin password | 10+ characters |
 | SBC admin API URL | `http://192.168.1.85/api` (use the reserved SBC LAN IP even if that VM is not installed yet) |
+| Enable recordings S3 offload? | **Press Enter for No** (default). Yes only if you want a dedicated recordings Garage bucket + home upload plumbing. Tenant sites still opt in with **`rec_s3`**. See [Recordings S3 offload](../fleet/recordings-s3-offload.md). |
 
 When it finishes, open in a browser:
 

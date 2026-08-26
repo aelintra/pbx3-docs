@@ -176,6 +176,8 @@ On **amd64**, clone **pbx3cagi** when it is public and set `PBX3_INSTALL_CAGI=1`
 
 That's it for this VM for now.
 
+Optional: **recordings → S3** is **off by default** at install. If control enabled capability, home plumbing can be wired and each tenant opts in with **`rec_s3`** (default No) — MkDocs [Recordings S3 offload](../fleet/recordings-s3-offload.md).
+
 ## Next
 
 1. [Install the Lab admin SPA (Vite)](install-lab-spa.md) on your PC (`npm run dev` → http://localhost:5173).

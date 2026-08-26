@@ -38,3 +38,4 @@ Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destin
 | Retire a home (tenants → Decom → SBC → terminate) | [Decommission a fleet instance](decommission-instance.md) |
 | Same KSUID after EC2 loss | [Rebuild from S3](rebuild-from-s3.md) |
 | Wipe one site | [Tenant delete](tenant-delete.md) |
+| Recordings → S3 offload on/off (ops `.env` today) | [Recordings S3 offload](recordings-s3-offload.md) |

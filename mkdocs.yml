@@ -98,6 +98,7 @@ nav:
       - Rebuild a fleet node from S3: fleet/rebuild-from-s3.md
       - Agent-assisted onboard / rebuild: fleet/agent-assisted.md
       - Backups in the org bucket: fleet/backups-org-bucket.md
+      - Recordings S3 offload (enable / disable): fleet/recordings-s3-offload.md
       - Install SBC edge (pbx3sbc + admin): fleet/install-sbc.md
       - Number dialects (PSTN formats): fleet/number-dialect.md
       - Site Groups (cross-tenant short dial): fleet/site-groups.md
