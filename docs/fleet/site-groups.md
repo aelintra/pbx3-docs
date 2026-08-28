@@ -20,6 +20,9 @@ Site Groups are the **supported** way for sister sites to short-dial each other 
 **Dial:** `{routing_prefix of peer}{their extension}`  
 **Same digits on every member** for a given peer (no per-sender invent).
 
+!!! note "Queues / IVRs / length"
+    Short dial always appends exactly the **destination** tenant’s extension length (`ext_len`). Phone extensions of that length work as expected. A queue or IVR on the far site is reachable **only** if its dial number is the **same length** as that tenant’s `ext_len`. Longer or shorter service numbers stay local-only on that tenant — sister sites cannot short-dial them. Give any cross-site service number a dial code in the destination’s `ext_len` if you need Site Group reachability. (Engineering: `TENANT_SHORT_DIAL_REQUIREMENTS.md` §3.8.1.)
+
 **Callback:** when the fleet CLIP path is live, the far end sees `{your routing_prefix}{your extension}` and can redial those digits through the same mesh.
 
 ## Where to click
