@@ -101,6 +101,7 @@ nav:
       - Recordings S3 offload (enable / disable): fleet/recordings-s3-offload.md
       - Install SBC edge (pbx3sbc + admin): fleet/install-sbc.md
       - Number dialects (PSTN formats): fleet/number-dialect.md
+      - DIDs (allocation and hops): fleet/dids.md
       - Site Groups (cross-tenant short dial): fleet/site-groups.md
       - Dial prefixes (InterSARK / INTERSITE convert): fleet/dial-prefix-legacy-migrate.md
       - SBC HA warm sync and EIP promote: fleet/sbc-ha-promote.md

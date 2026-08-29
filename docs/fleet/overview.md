@@ -29,6 +29,10 @@ Phones → **sbc.pbx3.com** → **08jzwn** / **bzy54n**; bucket **`08jzwn-pbx3`*
 
 Sister sites short-dial via **[Site Groups](site-groups.md)** (Fleet UI): destination routing prefix + membership mesh. Hand-entered dial prefixes are lab / break-glass only.
 
+## DIDs
+
+Carrier numbers: allocate in **[Fleet → DIDs](dids.md)** (hop 1 → home); route behaviour on the instance **[Inbound routes](../admin/inbound-routes.md)** (hop 2). Do not author fleet inbound delivery on the SBC Number routes panel.
+
 ## Instance lifecycle
 
 | Task | Page |
