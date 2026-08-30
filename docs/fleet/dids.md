@@ -13,10 +13,12 @@ Solo / non-fleet installs have no Fleet DIDs panel: hop-1 may be authored on the
 
 **Panel:** SPA **Fleet mode → DIDs**.
 
-1. **Allocate** (or reassign) an E.164 to a tenant shortuid.
-2. Choose **singleton** or **block** delivery when the catalog supports it (block uses a digit E.164 `sip_prefix` after dialect normalize — not a UK national leading-`0` form).
+1. **Allocate** an E.164 to a tenant shortuid (or **Re-allocate** a released row).
+2. Choose **singleton** or **block** delivery when the catalog supports it. For **block**, enter the shared stem as **Block prefix (E.164)** in the same `+CC…` shape as the lead number (e.g. lead `+441924918000`, prefix `+4419249180`). Digits-only also works; the catalog/SBC store **digit E.164** for hop-1 match (not UK national `0…`).
 3. Catalog writes `tenants/{shortuid}/dids.json` (home of record for ownership).
 4. **Project → SBC** compiles inbound delivery rules on the edge (`fleet=did` Number routes → that tenant’s current home).
+
+**Overlap:** Allocate refuses with a simple warning if the lead or block prefix is already owned (e.g. *DID number/block already allocated to {tenant}*). In practice that is almost always an input error — DIDs rarely move between tenants.
 
 **Status (catalog):**
 
@@ -87,7 +89,7 @@ See [Tenant move](tenant-move.md).
 |------------|-----|
 | Assign a Magrathea Telecom / Gamma / … number to a tenant | **Fleet → DIDs → Allocate** |
 | Send a range of DIDs to one IVR / queue | **Instance → Inbound routes** (Class / mask) after hop-1 delivery exists |
-| Change which instance receives a DID | Fleet reassign / move + Project (not SBC inbound edit) |
+| Change which tenant owns a DID | Unusual — **Release** then Allocate / Re-allocate + Project |
 | Choose outbound carrier by dialled prefix | **SBC → Number routes** (outbound) |
 | Fix wire format for a carrier Peer | **SBC → Peers** number dialect — [Number dialects](number-dialect.md) |
 
