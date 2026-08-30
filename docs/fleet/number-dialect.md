@@ -60,12 +60,15 @@ Stored as `dialect=uk-magrathea` (etc.) in Peer `attrs` alongside `carrier=` / `
 |-----|-----------|
 | Phone → node | Tenant dial habit (national / IDD) |
 | Node → SBC | DNID via transform → **`+CC…`**; CLID as stored (prefer `+CC…`) |
-| Carrier → SBC | Normalize per inbound Peer dialect → digit match → **+E.164** toward Asterisk |
+| Carrier → SBC | Accept whatever the Peer dialect allows (national / digit / `+` / IDD) |
+| **SBC → Asterisk** | **Always emit DID as `+E.164`** on the fleet wire — independent of the received format |
 | SBC → carrier | After `do_routing(0)`, render dialled + CLI/PAID for **outbound** Peer dialect |
+
+Hop-1 drouting matches on **digit E.164** (no `+`) after the same normalize step. Details and DID allocation: [DIDs — where they are allocated](dids.md).
 
 ## Node / inroutes
 
-After dialect normalize, inbound DIDs arrive on the node as **+E.164**. Prefer `inroutes.pkey` patterns that match `+CC…` (e.g. `+44…`) or digit E.164. National-only regexes may miss once the SBC rewrite is live.
+The home **never** needs to know the carrier’s national/IDD face for matching. After the SBC rewrite, inbound DIDs arrive as **`+E.164`**. Prefer `inroutes.pkey` patterns that match `+CC…` (e.g. `+441924918076`). National-only regexes (`01924…`) will miss.
 
 ## Lab checklist
 

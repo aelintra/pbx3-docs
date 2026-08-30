@@ -28,11 +28,25 @@ Solo / non-fleet installs have no Fleet DIDs panel: hop-1 may be authored on the
 
 **Number shape:** after SBC inbound dialect normalize, hop-1 match digits are **digit E.164** (e.g. `441924918076`). Prefer allocating in that form. See [Number dialects](number-dialect.md).
 
+### SBC always emits E.164 toward the home
+
+Irrespective of what the carrier sent (`01924918076`, `441924918076`, `+441924918076`, `0044…`, …), the SBC **normalizes before hop-1 match** and **relays the DID to the instance as `+E.164`** (fleet wire), e.g. **`+441924918076`**.
+
+| Face | Example |
+|------|---------|
+| Carrier → SBC (raw) | `01924918076` (UK national) or `+1513…` |
+| Hop-1 Number route prefix | digit E.164 `441924918076` |
+| SBC → Asterisk (R-URI user) | **`+441924918076`** |
+
+Instance inbound DiD rows must therefore match **`+E.164`**, not the carrier’s national face. That is why SARK migrate rewrites DiD pkeys the same way.
+
 ### What Allocate does *not* do
 
 Fleet Allocate does **not** create the instance inbound-route row. That looks like two gestures for one DID; it is intentional.
 
 Hop-2 supports **Class** and other masks (many consecutive DIDs → one destination). Auto-creating one inbound route per Allocate would fight that pattern. Keep hop-2 on the instance.
+
+**SARK → pbx3 migrate:** offline ETL rewrites DiD `inroutes.pkey` to `+E.164` (`01924918076` → `+441924918076`) so loaded sites match hop-2 after SBC normalize. Class/CLiD unchanged. See `aelintra/sark-to-pbx3` lock #15 / `--serving-cc`.
 
 ## Hop 2 — Instance inbound routes
 
