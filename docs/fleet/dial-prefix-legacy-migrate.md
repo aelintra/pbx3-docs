@@ -14,7 +14,7 @@ Operators converting SARK-era sister-site digit maps (InterSARK / SailToSail tru
 
 1. Inventory InterSARK / INTERSITE per **calling** tenant.  
 2. Pick non-colliding 2–4 digit prefixes → **tenant FQDN** of the sister site (not the instance hostname).  
-3. SPA **Outbound → Dial prefixes** as instance admin; genAst on each home.  
+3. SPA deep-link `/dialaliases` as instance admin (panel not in sidebar); genAst on each home.  
 4. **Dual-run** with legacy until prefix dial is proven.  
 5. Retire INTERSITE / InterSARK **only** after training — never auto-delete PSTN routes.
 

@@ -6,7 +6,7 @@
 Site Groups are the **supported** way for sister sites to short-dial each other on a fleet: each member owns a **destination routing prefix**; Gatekeeper projects a full mesh of dial-prefix rows onto each home. Phones dial `{prefix}{extension}` the same way everywhere in the group.
 
 !!! tip "Release model"
-    Hand-entered per-sender dial prefixes (instance **Outbound → Dial prefixes**) are **lab / break-glass only**. Do not invent production meshes that way. Use **Fleet → Site Groups**.
+    Hand-entered per-sender dial prefixes (instance `/dialaliases`, **not** in the sidebar) are **lab / break-glass only**. Do not invent production meshes that way. Use **Fleet → Site Groups**.
 
 ## Operator model
 
@@ -32,7 +32,7 @@ Site Groups are the **supported** way for sister sites to short-dial each other 
 3. On the group: set **name** / **prefix width**, **Add tenant** with a **routing prefix**, **Sync now**, remove members, or decommission.
 4. **Fleet → Tenants** shows each tenant’s routing prefix and Site Group link.
 
-Instance **Outbound → Dial prefixes** still lists rows for visibility; managed (Site Group) rows are view-only. With the cohort feature on, inventing cross-tenant prefixes on the instance is forbidden (403 → use Site Groups).
+Instance dial-prefix UI is **hidden from the sidebar** (deep-link `/dialaliases` for lab/break-glass). Managed (Site Group) rows are view-only there. With the cohort feature on, inventing cross-tenant prefixes on the instance is forbidden (403 → use Site Groups).
 
 ## Typical ops
 
@@ -55,7 +55,7 @@ Before Site Groups, lab used **manual** dialalias rows: on calling tenant A, inv
 |--|-------------------|--------------------|
 | Source of truth | Sender invents digits | Destination `routing_prefix` + membership |
 | Reverse / mesh | Manual second row | Automatic project |
-| Instance UI | Full CRUD | Managed rows read-only |
+| Instance UI | Full CRUD via `/dialaliases` (not in sidebar) | Managed rows read-only (same deep-link) |
 | Wild / release | **No** | **Yes** |
 
 Converting **SARK InterSARK / INTERSITE** digit maps into interim prefixes (not into Site Groups yet) is a separate recipe: [Dial prefixes — InterSARK convert](dial-prefix-legacy-migrate.md). There is **no** product migrate from hand-invented wild meshes into Site Groups — that model is not shipping.
