@@ -104,13 +104,16 @@ Target is an extension on **this** tenant. Cross-tenant spy must fail closed.
 
 | Dial / action | What it does |
 |---------------|----------------|
+| **In-call DTMF `*5`** | **Park** (preferred) — parks the *other* party; you hear the slot number (`901`–`903`). Requires Dial features (`t`/`T`) on the live bridge. |
+| Blind transfer to `*900` | Parks the remote party into the lot. You **do not** hear the slot announcement (blind transfer leaves before playback). |
+| Attended transfer to `*900` | **Do not use** — parks only the consultation leg; the held caller stays on hold on your phone. |
+| `901`–`903` | Retrieve a parked call (dial the announced slot). COS routes these straight to the tenant park lot (not through CoS filters). |
+| (timeout) | After `parkingtime` (default **60s**), ring the **parker** again (fleet uses the same FQDN Dial path as normal extension ring) |
 | `*8{ext}` | **Directed pickup** — answer a ringing `{ext}` you are allowed to pick up (call/pickup groups) |
 | `*8` (in-call feature) | Blind pickup of a ringing call in your pickup group (handset feature digit; idle dial of bare `*8` is not a dialplan destination) |
-| Transfer to `*900` | **Park** the call (default lot) |
-| `901`–`903` | Retrieve a parked call from the default lot positions |
 | Hold / Xfer keys | Handset features — hold plays MOH; transfer behaviour depends on the phone |
 
-Default lot size and park extension can be changed per tenant via parking overlay; stock template uses `*900` / `901`–`903`.
+Default lot size and park extension can be changed per tenant via parking overlay; stock template uses `*900` / `901`–`903`. Feature map: `parkcall=*5`, blind transfer `##`.
 
 ---
 
