@@ -8,4 +8,4 @@ Edit strategy, members, timeouts → Save → **Commit**.
 
 ## IVRs / agents
 
-Follow the same Save → Commit pattern. Class-of-service assignment in SPA may be partial — see [Timers and class of service](timers-cos.md).
+Follow the same Save → Commit pattern. Class of service: assign a **CoS profile** on the extension (see [Class of service](timers-cos.md)).

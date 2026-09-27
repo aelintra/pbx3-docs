@@ -78,7 +78,7 @@ nav:
       - Day timers and route profiles: admin/day-timers-and-profiles.md
       - Queues, IVRs, and agents: admin/queues-ivrs-agents.md
       - Feature codes: admin/feature-codes.md
-      - Timers and class of service: admin/timers-cos.md
+      - Class of service (rules and profiles): admin/timers-cos.md
       - Backup and restore: admin/backup-restore.md
       - Firewall: admin/firewall.md
       - Network and site name: admin/network-site-name.md

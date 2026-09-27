@@ -93,4 +93,4 @@ Day of week may be `*`, a single day, or a **forward** range (`mon-fri`, `mon-th
 ## See also
 
 - [Inbound routes (DDI)](inbound-routes.md)
-- [Timers and class of service](timers-cos.md) — other timer/CoS topics (not day-parts)
+- [Class of service (rules and profiles)](timers-cos.md) — outbound deny; not day-parts

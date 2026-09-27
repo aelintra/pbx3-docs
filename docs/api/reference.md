@@ -245,7 +245,32 @@ Bodies: *verify* `RouteProfileController`.
 
 ## Class of service (T)
 
-Three resources: **cosrules** (dialplan rules), **coscloses** / **cosopens** (extension ∩ rule). Intersection rows are keyed by extension identity (not the CoS rule name alone).
+**Rules** = deny packs; **profiles** = Standard + After-hours rule lists assigned to extensions. Prefer profiles for assignment; junction resources remain for lab dual-read until merge confidence.
+
+| Resource | Role |
+|----------|------|
+| **cosrules** | Deny-pattern CRUD; `orideopen` / `orideclosed` = **Tenant-wide** |
+| **cosprofiles** | Profile CRUD; `open_rules` / `closed_rules`; `is_default` **read-only for operators** (fixed Default — bootstrap/convert/seed only) |
+
+Extension field **`cos_profile`** (profile `pkey`) on extension show/update.
+
+### cosprofiles
+
+#### GET /cosprofiles · GET /cosprofiles/{cosprofile}
+#### POST /cosprofiles
+
+**Body (verify):** `cluster`, `cname`, `description`, `active`, `open_rules[]`, `closed_rules[]`.  
+`is_default` is not client-elected: first profile on an empty tenant becomes Default; later creates are non-default.
+
+#### PUT /cosprofiles/{cosprofile}
+
+Cannot change `is_default` (422). Edit rule lists on the Default profile to change default dial policy.
+
+#### DELETE /cosprofiles/{cosprofile}
+
+Cannot delete the Default profile (409).
+
+Delete blocked if profile is default or still assigned to extensions.
 
 ### coscloses
 
@@ -280,6 +305,8 @@ Three resources: **cosrules** (dialplan rules), **coscloses** / **cosopens** (ex
 'pkey' => 'required|alpha_dash',
 'dialplan' => 'required',
 ```
+
+Tenant-wide: `orideopen` / `orideclosed` (`YES`/`NO`). Rule `defaultopen` / `defaultclosed` demoted (seed/convert only).
 
 #### PUT /cosrules/{classofservice}
 #### DELETE /cosrules/{classofservice}
