@@ -16,7 +16,7 @@ This is **not** Fleet → Tenants → **Create** (empty tenant). It is for a **c
 |-------------|--------|
 | Format | One sqlite file (`.db`) readable on the home |
 | Tenants | **Exactly one** `cluster` row |
-| Name | `cluster.pkey` is the human **Name** — must be non-empty, **not** `default`, and free on the home. Ingest does **not** invent or remint Name |
+| Name | `cluster.pkey` is the human **Name** — must be non-empty, **not** `default`, and free on the home. Ingest does **not** invent or remint Name. See Step 0 to change the Name from 'default' to something else.  'default' is not allowed as a new Name. |
 | Identity | `cluster.shortuid` and `cluster.id` are opaque; preserved if free, reminted on collision |
 | Instance tables | May include `globals` / `trunks` for offline inspection — the home **ignores** those on ingest and keeps its own |
 
@@ -38,7 +38,7 @@ Compatible .db
   → 5. Hop-2 / Commit / smoke
 ```
 
-Do **not** stop after step 1 with a node-only tenant (catalog and SBC domain missing). Do **not** treat “domain registered” as “DIDs work.”
+Do **not** stop after step 1 — you will end up with a **node-only** tenant (catalog and SBC domain missing). Do **not** treat “domain registered” as finished for PSTN: steps 0–3 never route DIDs on the SBC — that is step 4 (Fleet DID Allocate + Project).
 
 ---
 
