@@ -16,11 +16,13 @@ This is **not** Fleet → Tenants → **Create** (empty tenant). It is for a **c
 |-------------|--------|
 | Format | One sqlite file (`.db`) readable on the home |
 | Tenants | **Exactly one** `cluster` row |
-| Name | `cluster.pkey` is the human **Name** (must not already exist on the home) |
+| Name | `cluster.pkey` is the human **Name** — must be non-empty, **not** `default`, and free on the home. Ingest does **not** invent or remint Name |
 | Identity | `cluster.shortuid` and `cluster.id` are opaque; preserved if free, reminted on collision |
 | Instance tables | May include `globals` / `trunks` for offline inspection — the home **ignores** those on ingest and keeps its own |
 
 Unsuitable: multi-tenant combined DBs, empty create-only shells, or mobility **move** zips (use [Tenant move](tenant-move.md) for those).
+
+**Single-tenant / solo sites** often ship with `cluster.pkey = default`. That fails preflight — rename **before** ingest (next section).
 
 ---
 
@@ -28,8 +30,9 @@ Unsuitable: multi-tenant combined DBs, empty create-only shells, or mobility **m
 
 ```text
 Compatible .db
+  → 0. Fix Name if pkey is default / empty / colliding
   → 1. Ingest on home (CLI)
-  → 2. Catalog meta
+  → 2. Catalog meta (+ label = Name)
   → 3. SBC domain
   → 4. Fleet DID Allocate (hop-1) if PSTN needed
   → 5. Hop-2 / Commit / smoke
@@ -39,9 +42,32 @@ Do **not** stop after step 1 with a node-only tenant (catalog and SBC domain mis
 
 ---
 
+## 0. Set Name on the candidate DB (if needed)
+
+**Name is established only in the candidate sqlite** (`cluster.pkey`). The CLI has no `--name` / rename flag.
+
+Check:
+
+```bash
+sqlite3 /path/to/tenant.db "SELECT pkey, shortuid, id FROM cluster;"
+```
+
+If `pkey` is `default`, empty, or already used on the target home, edit a **copy** of the file (keep the original):
+
+```bash
+cp /path/to/tenant.db /path/to/tenant-renamed.db
+sqlite3 /path/to/tenant-renamed.db \
+  "UPDATE cluster SET pkey = 'AcmeOffice' WHERE pkey = 'default' OR pkey = '' OR pkey IS NULL;"
+sqlite3 /path/to/tenant-renamed.db "SELECT pkey, shortuid, id FROM cluster;"
+```
+
+Use a short human Name that is free on the home (same rules as Fleet Create). Then ingest the renamed copy.
+
+---
+
 ## 1. Ingest on the home (CLI)
 
-Copy the compatible `.db` to the target fleet instance (SSH), then:
+Copy the compatible `.db` (after any Name fix) to the target fleet instance (SSH), then:
 
 ```bash
 # Plan only — Name, shortuid, FQDN, row counts, collision remints
@@ -79,9 +105,9 @@ export AWS_DEFAULT_REGION=us-east-1
   --fqdn <shortuid>.<apex>
 ```
 
-Ensure catalog **Name** / `label` equals the tenant **`pkey`** (patch meta if the script only wrote shortuid/FQDN).
-
 Home instance id is `globals.id` on the node (or the Fleet Instances row id).
+
+This script sets shortuid / home / FQDN only — **not** Name. Authoritative Name is already on the home as `cluster.pkey` from step 1. For Fleet display, catalog meta **`label`** should equal that `pkey` (Create path sets this; patch `tenants/{shortuid}/meta.json` if `label` is missing).
 
 ---
 
@@ -133,7 +159,7 @@ Hop-1 does **not** create or rewrite instance **Inbound routes** (hop-2). A comp
 
 | Failed after | What to do |
 |--------------|------------|
-| Ingest CLI error | Nothing durable; fix Name collision or DB shape and retry |
+| Ingest CLI error | Nothing durable; fix Name (`default` / empty / collision) or DB shape and retry |
 | Merge OK, catalog missing | Re-run `register-tenant.sh` with the printed shortuid/FQDN |
 | Catalog OK, no SBC domain | **Register on SBC** (repair) |
 | Domain OK, no PSTN | Fleet → DIDs → Allocate + Project |
@@ -155,10 +181,12 @@ Do not auto-wipe a successful merge to “retry from scratch” without an inten
 
 ## Operator checklist
 
-- [ ] Compatible `.db` (one `cluster`); Name free on the home  
+- [ ] Compatible `.db` (one `cluster`)  
+- [ ] Name set: `pkey` not `default`/empty; free on the home (step 0)  
 - [ ] `tenant:ingest-built --dry-run` then apply  
-- [ ] Catalog meta + Name/`label` = `pkey`  
+- [ ] Catalog meta; `label` = `pkey` (patch if script omitted it)  
 - [ ] SBC domain registered  
 - [ ] Fleet DID Allocate + Project (if PSTN)  
 - [ ] Hop-2 inbound OK (`+E.164` where required)  
 - [ ] Commit + REGISTER / dial / DID smoke  
+
