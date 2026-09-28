@@ -1,5 +1,8 @@
 # Install pbx3 and pbx3api
 
+!!! tip "AI-assisted path"
+    Prefer an agent to drive this page: [AI-assisted install](ai-assisted-install.md) (solo kickoff). You still approve DNS / VM / LE gates.
+
 Bring up a **clean Ubuntu 24.04** node (EC2, VM, or bare metal) with public DNS and TLS: packages → identity → API → DNS → Let’s Encrypt → prove `/up` → SPA admin.
 
 This is the **same stack** as the [Lab home](install-lab-home.md) install (`install-home-host.sh`), plus public DNS and LE. It does **not** run fleet onboard or Provision edge.

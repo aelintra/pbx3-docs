@@ -52,6 +52,8 @@ flowchart TB
 **Calls** go Phones → **SBC** → **instances**. The SBC is a **signaling border / proxy-registrar** (RTP stays on the home — not a media B2BUA).  
 **S3** and the **Gatekeeper** are control-plane memory and orchestration — calls keep working if they are down.
 
-Start with [What is PBX3?](getting-started/what-is-pbx3.md), then [Sign in](getting-started/sign-in.md) or [Install](installation/requirements.md).
+**Prefer an AI coding agent?** Start at [AI-assisted operations](getting-started/ai-assisted.md) and paste a kickoff from [AI-assisted install](installation/ai-assisted-install.md) — classical CLI pages stay the source of truth.
+
+Otherwise: [What is PBX3?](getting-started/what-is-pbx3.md), then [Sign in](getting-started/sign-in.md) or [Install](installation/requirements.md).
 
 Integrators: [Instance API](api/index.md) (Sanctum JSON API on each node `:44300`).
