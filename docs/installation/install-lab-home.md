@@ -31,8 +31,8 @@ Paste this (public **pbx3** + **pbx3api**; run the installer from the pbx3 tree 
 sudo apt-get update && sudo apt-get upgrade
 sudo apt-get install -y git
 cd ~
-git clone --depth 1 https://github.com/aelintra/pbx3.git
-git clone --depth 1 https://github.com/aelintra/pbx3api.git pbx3/pbx3api
+git clone --depth 1 https://github.com/pbx3-oss/pbx3.git
+git clone --depth 1 https://github.com/pbx3-oss/pbx3api.git pbx3/pbx3api
 cd pbx3
 sudo ./scripts/install-home-host.sh
 ```

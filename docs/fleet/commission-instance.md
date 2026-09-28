@@ -95,7 +95,7 @@ First-ever fleet only (not this path): generate once (`openssl rand -hex 32`), p
 !!! warning "Do not run this on the new EC2"
     `cd …/pbx3-directory/tools` and `./onboard-fleet-instance.sh` run on your **laptop**. The script uses local AWS CLI + SSH *into* the node. Looking for that path on virginia1 / the target will fail — there is no git tree there by design.
 
-The tool ships in the private **`aelintra/pbx3`** repo on the Mac:
+The tool ships in the **`pbx3-oss/pbx3`** repo on the Mac:
 
 `pbx3/pbx3-directory/tools/onboard-fleet-instance.sh`
 
@@ -105,7 +105,7 @@ If missing on the Mac (same clone Install used for `.deb`s):
 # ON THE MAC
 mkdir -p ~/GiT/pbx3-master
 cd ~/GiT/pbx3-master
-git clone https://github.com/aelintra/pbx3.git
+git clone https://github.com/pbx3-oss/pbx3.git
 cd pbx3 && git checkout main && git pull --ff-only
 
 export PBX3_REPO=~/GiT/pbx3-master/pbx3

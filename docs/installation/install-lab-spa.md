@@ -20,7 +20,7 @@ Until a published GitHub Pages bundle exists, Lab uses the **Vite dev server** s
 ## Clone and env
 
 ```bash
-git clone --depth 1 https://github.com/aelintra/pbx3spa.git
+git clone --depth 1 https://github.com/pbx3-oss/pbx3spa.git
 cd pbx3spa
 ```
 

@@ -18,7 +18,7 @@ Do **not** run this on the new EC2. Needs a local **`pbx3`** clone (`pbx3-direct
 
 ```bash
 mkdir -p ~/GiT/pbx3-master && cd ~/GiT/pbx3-master
-git clone https://github.com/aelintra/pbx3.git
+git clone https://github.com/pbx3-oss/pbx3.git
 cd pbx3 && git checkout main && git pull --ff-only
 ```
 

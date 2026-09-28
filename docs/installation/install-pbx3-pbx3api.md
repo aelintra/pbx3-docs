@@ -40,7 +40,7 @@ There is **no** monorepo. GitHub has separate repos. Release `.deb`s live at the
 |:--------:|-------|
 | ☐ | Ubuntu **24.04** node with sudo (bare metal, VM, or EC2) |
 | ☐ | SSH access (`ubuntu@…` or equivalent) + private key if needed |
-| ☐ | Laptop with **git**, **scp**/**rsync**, and GitHub access to **`aelintra/pbx3`** (and **`pbx3cagi`** for calls) |
+| ☐ | Laptop with **git**, **scp**/**rsync**, and network access to clone **`pbx3-oss/pbx3`** (and **`pbx3cagi`** for calls) — public HTTPS, no GitHub login required |
 | ☐ | Inbound **22**, **80** (LE), **44300**; outbound **443** — see [Requirements](requirements.md) |
 | ☐ | DNS control for an apex (e.g. `pbx3.com`) **or** readiness to create an **A** record after install |
 | ☐ | Email for Let’s Encrypt + friendly site **Name** + admin SPA email/password you invent (**8+** characters; not a docs placeholder) |
@@ -89,8 +89,8 @@ ssh -i "$KEY_FILE" "$SSH_HOST"
 # on the node:
 sudo apt-get update && sudo apt-get install -y git
 cd ~
-git clone --depth 1 https://github.com/aelintra/pbx3.git
-git clone --depth 1 https://github.com/aelintra/pbx3api.git pbx3/pbx3api
+git clone --depth 1 https://github.com/pbx3-oss/pbx3.git
+git clone --depth 1 https://github.com/pbx3-oss/pbx3api.git pbx3/pbx3api
 ```
 
 ### Usual lab path while pbx3 is private

@@ -2,8 +2,8 @@ site_name: PBX3 Documentation
 site_description: Installer and administrator guides for PBX3
 site_author: CoCoKraft
 copyright: Copyright &copy; CoCoKraft
-site_url: https://aelintra.github.io/pbx3-docs/
-repo_url: https://github.com/aelintra/pbx3-docs
+site_url: https://pbx3-oss.github.io/pbx3-docs/
+repo_url: https://github.com/pbx3-oss/pbx3-docs
 edit_uri: edit/main/docs/
 
 theme:
