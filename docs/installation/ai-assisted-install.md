@@ -1,14 +1,16 @@
 # AI-assisted install
 
-Paste one of these **kickoff prompts** into your AI coding agent. Replace `{placeholders}`. The agent must follow the linked MkDocs page and **shipped installers** — not invent a new procedure.
+Paste one of these **kickoff prompts** into your AI coding agent. Replace non-secret `{placeholders}`. Set passwords and keys in your **shell** (or SSH agent); tell the agent the **variable names** only — do not paste secret values into the chat (third-party logs are outside our control).
+
+The agent must follow the linked MkDocs page and **shipped installers** — not invent a new procedure. This is co-pilot + human gates, not unattended install. Prefer **one phase at a time** (stop after the phase’s check); do not paste “do all steps” unless you will watch every command.
 
 Posture: [AI-assisted operations](../getting-started/ai-assisted.md) · lock: `pbx3/workingdocs/AI_ASSISTED_OPERATOR_REQUIREMENTS.md`.
 
 ## Human gates (all installs)
 
-Ask before: launching/terminating VMs · DNS cutover · production Let’s Encrypt · IAM / long-lived keys · destructive DB/tenant wipes · unpaid spend beyond what I already approved.
+Ask before: launching/terminating VMs · DNS cutover · production Let’s Encrypt · IAM / long-lived keys · destructive DB/tenant wipes · unpaid spend beyond what I already approved · live Peer / dialplan / GenAst changes off the documented path.
 
-Do **not** put ops AWS keys or deploy credentials into the admin SPA or public issues.
+Do **not** put ops AWS keys or deploy credentials into the admin SPA, public issues, or the chat.
 
 ---
 
@@ -26,7 +28,8 @@ Worksheet (fill these):
 - LE_EMAIL: {email}
 - SITE_NAME: {friendly name}
 - DOMAIN_TLD: {apex e.g. example.com}
-- ADMIN_EMAIL / ADMIN_PASSWORD: {spa admin}
+- ADMIN_EMAIL / ADMIN_PASSWORD: set in your shell as env vars; do not paste password values into this chat
+- Constraint: follow that MkDocs page and shipped scripts only — no parallel installer.
 
 Ask before: creating/destroying the VM, DNS A-record cutover, production LE cert requests.
 Skip fleet service token on this page (solo / commission later).
