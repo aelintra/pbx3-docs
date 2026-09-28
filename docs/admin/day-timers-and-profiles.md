@@ -67,9 +67,9 @@ If the profile has no line for the current mode, the call falls back to the prof
 When **no** day timer matches, the tenant mode is **`open`**. That is fixed for every tenant — there is no “default closed” baseline.
 
 - Sites with **no timers** (only a BLF open/closed throw) stay open until forced closed.
-- Office hours are usually painted as **closed** windows (overnight, weekends) on that open baseline — same polarity as classic SARK.
+- Office hours are usually painted as **closed** windows (overnight, weekends) on that open baseline — same polarity as a classic previous PBX.
 
-Coming from FreePBX or 3CX: those products often paint **open hours** and treat gaps as closed. Here, gaps stay **open** unless a timer (or force) says otherwise.
+Coming from other PBX products: many paint **open hours** and treat gaps as closed. Here, gaps stay **open** unless a timer (or force) says otherwise.
 
 ## Simple office example
 

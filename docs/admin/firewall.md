@@ -22,6 +22,6 @@ Homes use **UFW** (not Shorewall). **One** allow-list covers **IPv4 and IPv6** (
 
 Cloud security groups are **in addition** to UFW — open **44300**, **80** (ACME), and SIP as needed on both.
 
-## After a SARK migrate
+## After a previous-PBX migrate
 
-Customer backups do **not** carry host Shorewall rules. Post-load firewall is the same **UFW baseline** as greenfield. `fqdninspect` / `sipflood` are forced **off** by the ETL (they had no UFW equivalent). Re-enter any custom allows in this panel if the old box had extra ACCEPTs.
+Customer backups do **not** carry host Shorewall rules. Post-load firewall is the same **UFW baseline** as greenfield. `fqdninspect` / `sipflood` are forced **off** by the offline migrate tooling when present (they had no UFW equivalent). Re-enter any custom allows in this panel if the old box had extra ACCEPTs.

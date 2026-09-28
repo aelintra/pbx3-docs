@@ -58,7 +58,7 @@ Before Site Groups, lab used **manual** dialalias rows: on calling tenant A, inv
 | Instance UI | Full CRUD via `/dialaliases` (not in sidebar) | Managed rows read-only (same deep-link) |
 | Wild / release | **No** | **Yes** |
 
-Converting **SARK InterSARK / INTERSITE** digit maps into interim prefixes (not into Site Groups yet) is a separate recipe: [Dial prefixes — InterSARK convert](dial-prefix-legacy-migrate.md). There is **no** product migrate from hand-invented wild meshes into Site Groups — that model is not shipping.
+Converting **previous-PBX sister-site digit maps** (legacy trunk techs / `*_INTERSITE` OutRoutes) into interim prefixes (not into Site Groups yet) is a separate recipe: [Dial prefixes — legacy sister-site convert](dial-prefix-legacy-migrate.md). There is **no** product migrate from hand-invented wild meshes into Site Groups — that model is not shipping.
 
 ## Related
 

@@ -1,11 +1,11 @@
 # Number dialects (PSTN formats)
 
-Operators map each carrier Peer to a **number dialect** so dialled numbers and CLI survive ITSP format quirks (for example **Magrathea Telecom** ↔ **Gamma**). Inventory stays E.164 **digits**; the fleet wire between node and SBC is **+E.164** (`+` + country code of the **node’s serving country**, not hard-coded `+44`).
+Operators map each carrier Peer to a **number dialect** so dialled numbers and CLI survive ITSP format quirks (for example **upstream carrier** ↔ **Gamma**). Inventory stays E.164 **digits**; the fleet wire between node and SBC is **+E.164** (`+` + country code of the **node’s serving country**, not hard-coded `+44`).
 
 **Who does what (policy):** `pbx3/pbx3-directory/docs/NUMBER_WIRE_POLICY.md`  
 **Requirements:** `pbx3/pbx3-directory/docs/NUMBER_DIALECT_REQUIREMENTS.md` (same tree as other fleet specs).
 
-**Naming:** **The SBC** = our edge product (admin UI / OpenSIPS). **Magrathea Telecom** and **Gamma** = example UK **ITSP** Peers on that edge — not names for the SBC itself.
+**Naming:** **The SBC** = our edge product (admin UI / OpenSIPS). **Upstream carriers** (e.g. a UK national ITSP, **Gamma**, Twilio) = **Peers** on that edge — not names for the SBC itself.
 
 ## Why +E.164
 
@@ -18,7 +18,7 @@ Full policy: **`NUMBER_WIRE_POLICY.md`**. Short form:
 | Layer | Problem | Where (Phase 1 now) |
 |-------|---------|---------------------|
 | **Subscriber dial habit** | National / IDD access codes from the phone (UK `0…` / `00…`, US `1…` / `011…`) | **Node** — Egress trunk transformation mask (DNID only) |
-| **Carrier wire format** | What Magrathea Telecom / Gamma / etc. accept on R-URI and PAID/CLI | **SBC** — Peer Number dialect (+ optional strip / pri_prefix) |
+| **Carrier wire format** | What upstream carrier / Gamma / etc. accept on R-URI and PAID/CLI | **SBC** — Peer Number dialect (+ optional strip / pri_prefix) |
 
 Phase 2 may move habit normalize to the SBC when gated; carrier face stays on the SBC always.
 
@@ -41,9 +41,9 @@ Examples after node transform: `0015139266349` → `+15139266349`; `011441924918
 
 In **SBC Admin → Peering → Peers**:
 
-1. Open the Magrathea Telecom / Gamma inbound or outbound Peer (not Asterisk destinations).
+1. Open the upstream carrier / Gamma inbound or outbound Peer (not Asterisk destinations).
 2. Set **Number dialect** (a **format recipe**, not a carrier brand — see requirements §5.3):
-   - **UK — Magrathea** — UK multi-accept; outbound +E.164; PAID + RPID (recipe id `uk-magrathea`; named for the Magrathea Telecom CLI matrix, not the SBC)
+   - **UK — Upstream carrier (PAID + RPID)** — UK multi-accept; outbound +E.164; PAID + RPID (recipe id `uk-magrathea` until renamed — behavioural label only)
    - **UK — Gamma** — same inbound accept; outbound +E.164; PAID (From aligned)
    - **Strict +E.164** — Teams-style; inbound must already be `+…`
    - **None** — best-effort UK inbound; outbound leaves drouting strip/prefix alone
@@ -74,15 +74,14 @@ The home **never** needs to know the carrier’s national/IDD face for matching.
 
 | # | Case | How |
 |---|------|-----|
-| M1 | Magrathea Telecom inbound national / + / IDD | Set inbound Peer `uk-magrathea`; place test calls; confirm Asterisk R-URI `+44…` |
-| M2 | Magrathea Telecom outbound | Outbound Peer `uk-magrathea`; dial PSTN; confirm R-URI/CLI `+` and PAID |
+| M1 | upstream carrier inbound national / + / IDD | Set inbound Peer `uk-magrathea`; place test calls; confirm Asterisk R-URI `+44…` |
+| M2 | upstream carrier outbound | Outbound Peer `uk-magrathea`; dial PSTN; confirm R-URI/CLI `+` and PAID |
 | G1 | Gamma outbound | Outbound Peer `uk-gamma`; confirm PAID is +E.164 (or E.164 digits per contract) |
-| X1 | Cross-carrier | Magrathea Telecom DID inbound + Gamma egress; dialled/CLI rendered for Gamma |
+| X1 | Cross-carrier | upstream carrier DID inbound + Gamma egress; dialled/CLI rendered for Gamma |
 | N1 | UK phone → US | Dial `001…`; node transform → `+1…` before SBC |
 
 Offline matrices: `pbx3sbc-admin` PHPUnit `NumberDialectTest`.
 
 ## Carrier docs
 
-- Magrathea Telecom [LI Agreement](https://www.magrathea-telecom.co.uk/wp-content/uploads/2018/09/LI-Agreement-1.pdf), [network/presentation guidance](https://www.magrathea-telecom.co.uk/wp-content/uploads/2018/11/Guidance-on-Network-and-Presentation-numbers.pdf)
-- Gamma SIP trunk CPE notes (R-URI/To national or +E.164; From/PAID national or +E.164)
+Refer to each upstream carrier’s own SIP / CLI / LI documentation for wire-format contracts. Do not hard-wire a single vendor’s public PDFs into this guide.

@@ -40,7 +40,7 @@ Irrespective of what the carrier sent (`01924918076`, `441924918076`, `+44192491
 | Hop-1 Number route prefix | digit E.164 `441924918076` |
 | SBC → Asterisk (R-URI user) | **`+441924918076`** |
 
-Instance inbound DiD rows must therefore match **`+E.164`**, not the carrier’s national face. That is why SARK migrate rewrites DiD pkeys the same way.
+Instance inbound DiD rows must therefore match **`+E.164`**, not the carrier’s national face. That is why offline migrate tooling rewrites DiD pkeys the same way.
 
 ### What Allocate does *not* do
 
@@ -48,7 +48,7 @@ Fleet Allocate does **not** create the instance inbound-route row. That looks li
 
 Hop-2 supports **Class** and other masks (many consecutive DIDs → one destination). Auto-creating one inbound route per Allocate would fight that pattern. Keep hop-2 on the instance.
 
-**SARK → pbx3 migrate:** offline ETL rewrites DiD `inroutes.pkey` to `+E.164` (`01924918076` → `+441924918076`) so loaded sites match hop-2 after SBC normalize. Class/CLiD unchanged. See `aelintra/sark-to-pbx3` lock #15 / `--serving-cc`.
+**Previous PBX → pbx3 migrate:** offline ETL (private) rewrites DiD `inroutes.pkey` to `+E.164` (`01924918076` → `+441924918076`) so loaded sites match hop-2 after SBC normalize. Class/CLiD unchanged. Serving country / `--serving-cc` is documented with the private migrate tool.
 
 ## Hop 2 — Instance inbound routes
 
@@ -87,7 +87,7 @@ See [Tenant move](tenant-move.md).
 
 | I want to… | Use |
 |------------|-----|
-| Assign a Magrathea Telecom / Gamma / … number to a tenant | **Fleet → DIDs → Allocate** |
+| Assign a upstream carrier / Gamma / … number to a tenant | **Fleet → DIDs → Allocate** |
 | Send a range of DIDs to one IVR / queue | **Instance → Inbound routes** (Class / mask) after hop-1 delivery exists |
 | Change which tenant owns a DID | Unusual — **Release** then Allocate / Re-allocate + Project |
 | Choose outbound carrier by dialled prefix | **SBC → Number routes** (outbound) |

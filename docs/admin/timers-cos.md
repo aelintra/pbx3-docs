@@ -117,9 +117,9 @@ Same Default / Tenant-wide high-risk floor on both.
 
 ---
 
-## Migrate from SARK
+## Migrate from a previous PBX
 
-SARK per-phone CoS matrices become profiles via fingerprint convert (same path as upgrading an existing pbx3 DB). Rename migrated profiles after import if the auto names are ugly. See the SARK migrate docs in **sark-to-pbx3**.
+Previous-PBX per-phone CoS matrices become profiles via fingerprint convert (same path as upgrading an existing pbx3 DB). Rename migrated profiles after import if the auto names are ugly. Offline migrate tooling is **private** (ops); operators receive a compatible one-tenant `.db` and follow [Ingest a compatible tenant DB](../fleet/ingest-compatible-db.md).
 
 ---
 

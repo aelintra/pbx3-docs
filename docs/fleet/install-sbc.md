@@ -122,7 +122,7 @@ sudo ./scripts/setup-opensips-wss.sh --cert-domain <PUBLIC_FQDN> --install-packa
 # Open SG + host firewall TCP 8089, opensips -C, restart opensips; confirm UDP 5060 still up.
 ```
 
-Checklist: **`pbx3sbc/workingdocs/WEBRTC_W1_MAGRATHEA.md`**. Lab LAN (self-signed, one command): [Install the Lab SBC](../installation/install-lab-sbc.md) §4 → `scripts/enable-lab-wss.sh`.
+Checklist: **`pbx3sbc/workingdocs/~/GiT/pbx3-ops/devdocs/oss-move/WEBRTC_W1_SBC_LAB.md`**. Lab LAN (self-signed, one command): [Install the Lab SBC](../installation/install-lab-sbc.md) §4 → `scripts/enable-lab-wss.sh`.
 
 SPA **Line test** defaults to `wss://sbc.pbx3.com:8089/ws` — override to your edge FQDN when different.
 

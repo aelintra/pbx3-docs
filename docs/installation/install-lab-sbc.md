@@ -117,7 +117,7 @@ Check: `ss -lnt | grep 8089` and `ss -ulnt | grep 5060` both show listeners; des
 !!! warning "Trust the self-signed cert"
     Chrome/Safari reject untrusted `wss://` handshakes. On the Mac, copy `/etc/opensips/tls/lab-sbc-fullchain.pem` off the SBC into **Keychain Access → System** and set **Always Trust** for SSL, or use [mkcert](https://github.com/FiloSottile/mkcert) for `192.168.1.85`. Cloud fleets use real Let’s Encrypt — see [Install SBC](../fleet/install-sbc.md) § WebRTC WSS.
 
-Cloud VIP path (LE + `setup-opensips-wss.sh`, then enable **one** cert pair by hand): **`pbx3sbc/workingdocs/WEBRTC_W1_MAGRATHEA.md`**.
+Cloud VIP path (LE + `setup-opensips-wss.sh`, then enable **one** cert pair by hand): **`pbx3sbc/workingdocs/~/GiT/pbx3-ops/devdocs/oss-move/WEBRTC_W1_SBC_LAB.md`**.
 
 That's it for this VM for now. Do **not** Provision edge yet — there is no home in the catalog.
 

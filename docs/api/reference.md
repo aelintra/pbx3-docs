@@ -2,7 +2,7 @@
 
 Digest of instance routes under `/api`. Paths are relative to the [base URL](index.md#base-url).
 
-**Body accuracy:** Required create fields and many update lists below follow Laravel validation style. Where marked *verify*, confirm against the controller `$updateableColumns` or **`GET /schemas`**. Known path/method mistakes from older SARK-era docs have been corrected against `routes/api.php`.
+**Body accuracy:** Required create fields and many update lists below follow Laravel validation style. Where marked *verify*, confirm against the controller `$updateableColumns` or **`GET /schemas`**. Known path/method mistakes from older docs have been corrected against `routes/api.php`.
 
 **Ability legend:** T = `ability:admin,tenant` · R = `ability:admin,recordings` · A = `abilities:admin` · F = `fleet.token` · S = any Sanctum
 
@@ -396,7 +396,7 @@ Home dashboard / pulse payload. Query params *verify* controllers.
 #### GET /sysglobals (T) — read instance globals
 #### PUT /sysglobals (A) — update
 
-Updateable keys include site/network/recording/SIP defaults (e.g. `FQDN`, `COUNTRYCODE`, `default_outbound_dialplan`, …). Full list: *verify* `SysglobalController` / schemas. Historical SARK-style UPPERCASE keys still appear in many deployments.
+Updateable keys include site/network/recording/SIP defaults (e.g. `FQDN`, `COUNTRYCODE`, `default_outbound_dialplan`, …). Full list: *verify* `SysglobalController` / schemas. Historical UPPERCASE keys still appear in many deployments.
 
 ---
 
