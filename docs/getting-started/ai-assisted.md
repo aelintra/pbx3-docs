@@ -2,6 +2,8 @@
 
 If you already use an **AI coding agent** (Cursor, Copilot agent mode, Claude Code, etc.), PBX3 documents a **co-pilot** path: the agent drives **published** installers and runbooks **with you**. It is optional. The classical MkDocs/CLI pages remain a **complete** install path with no agent required.
 
+PBX3 itself was **designed by humans** in mid/late 2025; most of the implementation was written in Cursor under **human-directed AI** assistance. That is how the product was built — and the same limits apply when you use an agent to operate it.
+
 !!! warning "Not unattended — and not a panacea"
     This is not “AI installs PBX3 for you.” You approve destructive and spend-adjacent steps (VMs, DNS, certificates, IAM, wipes, PSTN spend). Proceed **one phase at a time** and verify checks; that limits agent errors but does **not** eliminate them — current coding agents still fail. Third-party chat logs can retain whatever you paste — put secrets in your **shell environment / SSH agent**, not in the prompt.
 
