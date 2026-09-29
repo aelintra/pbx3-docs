@@ -257,7 +257,7 @@ curl -4 -sS --connect-timeout 5 --max-time 10 -o /dev/null -w "%{http_code}\n" "
 curl -k -sS -o /dev/null -w "%{http_code}\n" https://127.0.0.1:44300/up
 ```
 
-Open the Admin SPA **from the laptop** and [sign in](../getting-started/sign-in.md) with the email/password from the worksheet. API base URL example: `https://${INSTANCE_FQDN}:44300/api`.
+Open the shared Admin SPA at **[https://app.pbx3.com](https://app.pbx3.com)** (you do **not** install or build **pbx3spa** on this node) and [sign in](../getting-started/sign-in.md) with the email/password from the worksheet. API base URL example: `https://${INSTANCE_FQDN}:44300/api`. Node API must allow CORS from `https://app.pbx3.com` (default lab installs usually allow `*`).
 
 ---
 
@@ -288,7 +288,7 @@ Lab ARM guests compile from source — see [Lab home → CAGI](install-lab-home.
 - [ ] DNS **A** for `globals.fqdn` → public IP
 - [ ] Let’s Encrypt applied
 - [ ] From **ops laptop**: trusted `https://{fqdn}:44300/up` → **200** (SG allows your IP on 44300)
-- [ ] Admin SPA login works from the laptop
+- [ ] Admin SPA login works from **https://app.pbx3.com** (laptop)
 - [ ] (Calls) `pbx3cagi` installed on amd64
 
 ## Failure cheat sheet

@@ -180,5 +180,5 @@ Optional: **recordings → S3** is **off by default** at install. If control ena
 
 ## Next
 
-1. [Install the Lab admin SPA (Vite)](install-lab-spa.md) on your PC (`npm run dev` → http://localhost:5173).
+1. [Admin SPA](install-lab-spa.md) — Lab LAN: Vite on your PC (`npm run dev` → http://localhost:5173). Cloud/public fleets use **https://app.pbx3.com** (no local build).
 2. [Adopt this home into Fleet](install-lab-adopt.md), then **Provision edge**. Ops Mac onboard is **not** the Lab happy path.

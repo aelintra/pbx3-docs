@@ -36,7 +36,7 @@ export PBX3_ORG_BUCKET=08jzwn-pbx3
 
 ## What it covers
 
-IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, fleet token, backup upload) → seed **Egress** → S3 smoke → register catalog → SPA shows a second row.
+IAM policy/role/profile → attach EC2 → SSH `.env` (`PBX3_ORG_BUCKET`, fleet token, backup upload) → seed **Egress** → S3 smoke → register catalog → shared SPA (**[app.pbx3.com](https://app.pbx3.com)**) shows a second row (bucket CORS must allow that origin).
 
 After onboard: Fleet → **Instances** → **Provision edge** (`sip:{PUBLIC_IP}:5060`) and Fail2ban whitelist — see [Commission Step 2](commission-instance.md#step-2--sbc-edge-required-before-fleet-create-tenant).
 

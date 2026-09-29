@@ -6,14 +6,14 @@ This creates / uses a **new KSUID** from Install. It is **not** [Rebuild from S3
 
 | Phase | What | Where |
 |-------|------|--------|
-| **0** | EC2 → `install-home-host.sh` (skip fleet) → DNS → LE → SPA admin | **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** (required first) |
+| **0** | EC2 → `install-home-host.sh` (skip fleet) → DNS → LE → sign in at **app.pbx3.com** | **[Install pbx3 and pbx3api](../installation/install-pbx3-pbx3api.md)** (required first) |
 | **1** | Fleet adopt (IAM, catalog, Egress) | This page |
 | **2** | Provision edge + Fail2ban | This page |
 
 EC2, EIP, SG (including **80** for LE and **44300** for ops/Gatekeeper), and DNS are part of Install — do not re-do them here.
 
 !!! tip "Install not done yet?"
-    Finish [Install](../installation/install-pbx3-pbx3api.md) first (trusted `/up` + SPA admin).  
+    Finish [Install](../installation/install-pbx3-pbx3api.md) first (trusted `/up` + login at [app.pbx3.com](https://app.pbx3.com)).  
     Adopt-only details also on [Onboard](onboard-instance.md).  
     Retire a home → [Decommission](decommission-instance.md).
 
@@ -53,7 +53,7 @@ export INSTANCE_FQDN=…
 |---------|----------------|
 | **1a** token | **Ops Mac** (SSH *to* control/sibling only to *read* the secret) |
 | **1b** onboard script | **Ops Mac only** — never on the new EC2 |
-| **1c** sign-off | **New node** (SSH in) + Fleet SPA on the Mac |
+| **1c** sign-off | **New node** (SSH in) + Fleet mode on **app.pbx3.com** |
 
 The new instance does **not** need a `pbx3` git clone. The Mac does.
 
@@ -127,7 +127,7 @@ cd "${PBX3_REPO:-$HOME/GiT/pbx3-master/pbx3}/pbx3-directory/tools"
 
 **What it does:** from the Mac → AWS IAM + SSH to the node → catalog register → fleet `.env` → seed **Egress** → genAst / runLinker / Asterisk restart → S3 smoke.
 
-### 1c — Sign-off (node + Fleet SPA)
+### 1c — Sign-off (node + Fleet SPA at app.pbx3.com)
 
 **SSH into the new node** for these checks:
 
