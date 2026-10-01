@@ -9,6 +9,8 @@ High-level order (panel Jobs / Move wizard may wrap this):
 5. Catalog / SBC repoint (`move-tenant.sh` or Fleet Move job). Confirm **DID delivery** still points at the new home (Fleet → DIDs → Project / reconcile if needed) — see [DIDs — where they are allocated](dids.md).
 6. **Drain, then wipe source** — after verify, the job sits at `awaiting_cleanup`. Wait for phones to re-register on dest. You can leave the job page; reopen via Fleet → **Jobs** → **Open**, then **Wipe tenant on source** (full cascade + Commit). Do not start a second Move for the same wipe.
 
+If handsets use fleet **`provision.{apex}`** RPS, **do not** change RPS on move — the MAC index rewrite updates the edge map to the destination home. See [Desk phone RPS enrollment](../admin/phone-provisioning-rps.md).
+
 **Trunks do not move** — recreate or map on destination.
 
 ```bash
