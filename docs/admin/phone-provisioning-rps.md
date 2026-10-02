@@ -59,3 +59,4 @@ There is no bulk migrator yet; this is a one-time operator change. After fleet i
 
 - Extension Save → Commit and SPA provision URL / Reset Once — [Extensions](extensions.md)
 - Tenant move (SIP/catalog; RPS stays on `provision.{apex}`) — [Tenant move](../fleet/tenant-move.md)
+- Reseller / vendor delivers full config (no PBX3 HTTP) — [Reseller full-config (M1)](phone-provisioning-m1.md)
