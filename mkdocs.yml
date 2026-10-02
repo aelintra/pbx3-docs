@@ -78,6 +78,7 @@ nav:
       - Desk phone RPS enrollment: admin/phone-provisioning-rps.md
       - Reseller full-config (M1): admin/phone-provisioning-m1.md
       - Provision streams (System + Customer): admin/phone-provisioning-streams.md
+      - Restrict provision HTTPS (edge): admin/phone-provisioning-access.md
       - Trunks and outbound routes: admin/trunks-routes.md
       - Inbound routes (DDI): admin/inbound-routes.md
       - Day timers and route profiles: admin/day-timers-and-profiles.md
